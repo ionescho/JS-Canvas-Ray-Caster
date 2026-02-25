@@ -1,0 +1,19 @@
+import { CANVAS_DIMENSIONS } from "./drawer";
+
+export const BLOCKS_ARRAY = [
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 1, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 1, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+];
+
+export const blockDimensions = {
+    x: CANVAS_DIMENSIONS.x / BLOCKS_ARRAY[0].length,
+    y: CANVAS_DIMENSIONS.y / BLOCKS_ARRAY.length,
+}
