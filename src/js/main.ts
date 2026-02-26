@@ -4,6 +4,7 @@ import { addDebuggerMessage, debuggerMessages, drawLegend } from './helpers/debu
 import { drawBlocks, drawPlayer, emptyCanvas } from './helpers/drawer';
 import { updateOrientation, updatePosition } from './helpers/movement';
 import { player } from './helpers/player';
+import { castRays } from './helpers/ray-caster';
 
 //draw interval in frames per second
 export const FPS = 50
@@ -26,6 +27,8 @@ setInterval(() => {
     drawBlocks();
 
     drawPlayer();
+
+    castRays();
 
     drawLegend();
 

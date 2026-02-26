@@ -40,12 +40,14 @@ export const drawRect = (coords: Coords, size: Coords, color?: string) => {
     }
 }
 
-export const drawLine = (start: Coords, end: Coords) => {
+export const drawLine = (start: Coords, end: Coords, lineWidth: number = 1, color: string = 'black') => {
     ctx.beginPath();
     const mappedCoordsStart = mapNormalXYIntoCanvasXY(start);
     ctx.moveTo(mappedCoordsStart.x, mappedCoordsStart.y);
     const mappedCoordsEnd = mapNormalXYIntoCanvasXY(end);
     ctx.lineTo(mappedCoordsEnd.x, mappedCoordsEnd.y);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lineWidth;
     ctx.stroke();
 }
 

@@ -84,9 +84,8 @@ const checkPlayerBlockCollision = (potentialFuturePlayerPos: Coords, blockX: num
 export const resolvePotentialCollisions = (potentialFuturePlayerPos: Coords) => {
 
     //first determine which block(sector) the player center is in
-    const playerSectorX = Math.floor((player.coords.x + CANVAS_DIMENSIONS.x/2) / blockDimensions.x);
-    const playerSectorY = Math.floor((- player.coords.y + CANVAS_DIMENSIONS.y/2) / blockDimensions.y);
-    addDebuggerMessage(`Sector(X,Y): (${playerSectorX + 1}, ${playerSectorY + 1})`);
+    const playerSector = player.getSector();
+    addDebuggerMessage(`Sector(X,Y): (${playerSector.x + 1}, ${playerSector.y + 1})`);
     
     //then determine which direction the player is looking towards(up, left, down, right)
     let isGoingUp = player.movement.speedVector.y > 0;
@@ -97,9 +96,9 @@ export const resolvePotentialCollisions = (potentialFuturePlayerPos: Coords) => 
     const blocksToCheckXIndexDiff = isGoingLeft ? -1 : 1;
     const blocksToCheckYIndexDiff = isGoingUp ? -1 : 1;
     const collisionCheckBlockIndexes: Coords[] = [
-        {x: playerSectorX, y: playerSectorY + blocksToCheckYIndexDiff}, // block along y axis
-        {x: playerSectorX + blocksToCheckXIndexDiff, y: playerSectorY}, // block along x axis
-        {x: playerSectorX + blocksToCheckXIndexDiff, y: playerSectorY + blocksToCheckYIndexDiff} // diagonal block
+        {x: playerSector.x, y: playerSector.y + blocksToCheckYIndexDiff}, // block along y axis
+        {x: playerSector.x + blocksToCheckXIndexDiff, y: playerSector.y}, // block along x axis
+        {x: playerSector.x + blocksToCheckXIndexDiff, y: playerSector.y + blocksToCheckYIndexDiff} // diagonal block
     ];
     let resolutionCollision: Coords | false = false;
     collisionCheckBlockIndexes.forEach(({x, y}) => {
