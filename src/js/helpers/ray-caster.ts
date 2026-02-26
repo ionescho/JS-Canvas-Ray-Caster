@@ -38,14 +38,14 @@ const castRayUntilHorizontalCollision = (startingPoint: Coords, orientationAngle
         }
         let correspondingBlockAtIntersection = getBlockAtIntersection(intersection);
 
-        while(intersection.y !== screenEnd && correspondingBlockAtIntersection == 0) {
+        while(Math.abs(intersection.y) < CANVAS_DIMENSIONS.y/2 && !correspondingBlockAtIntersection) {
             intersection.x = intersection.x + operationModifier * Math.tan(orientationAngle) * blockDimensions.y
             intersection.y = intersection.y + operationModifier * blockDimensions.y;
 
             correspondingBlockAtIntersection = getBlockAtIntersection(intersection);
         }
 
-        if(correspondingBlockAtIntersection === 1) {
+        if(correspondingBlockAtIntersection === 1 || intersection.y === screenEnd) {
             // ray hit a wall!
             // drawLine(player.coords, intersection, 2, 'red')
             return intersection
@@ -84,14 +84,14 @@ const castRayUntilVerticalCollision = (startingPoint: Coords, orientationAngle: 
         }
         let correspondingBlockAtIntersection = getBlockAtIntersection(intersection);
 
-        while(intersection.y !== screenEnd && correspondingBlockAtIntersection == 0) {
+        while(Math.abs(intersection.x) < CANVAS_DIMENSIONS.x/2 && !correspondingBlockAtIntersection) {
             intersection.x = intersection.x + operationModifier * blockDimensions.x;
             intersection.y = intersection.y + operationModifier * (1/Math.tan(orientationAngle)) * blockDimensions.x;
 
             correspondingBlockAtIntersection = getBlockAtIntersection(intersection);
         }
 
-        if(correspondingBlockAtIntersection === 1) {
+        if(correspondingBlockAtIntersection === 1 || intersection.x === screenEnd) {
             // ray hit a wall!
             // drawLine(player.coords, intersection, 2, 'red')
             return intersection
