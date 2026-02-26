@@ -1,11 +1,11 @@
 import { blockDimensions, BLOCKS_ARRAY } from "./blocks";
 import { addDebuggerMessage, roundDec2 } from "./debugger";
-import { CANVAS_DIMENSIONS, Coords, drawLine, drawRect } from "./drawer";
+import { CANVAS_DIMENSIONS, Coords, drawLine } from "./drawer";
 import { player } from "./player";
 import { subVec } from "./vectorOperations";
 
 const FIELD_OF_VIEW_ANGLE = Math.PI / 3;
-const FIELD_OF_VIEW_RAY_INTERVAL = 0.03;
+const FIELD_OF_VIEW_RAY_INTERVAL = 0.1;
 
 const castRayUntilHorizontalCollision = (startingPoint: Coords, orientationAngle: number) => {
    const isGoingAlongAxis = orientationAngle > 3 * Math.PI/2 || orientationAngle < Math.PI/2;
@@ -38,14 +38,14 @@ const castRayUntilHorizontalCollision = (startingPoint: Coords, orientationAngle
         }
         let correspondingBlockAtIntersection = getBlockAtIntersection(intersection);
 
-        while(Math.abs(intersection.y) < CANVAS_DIMENSIONS.y/2 && !correspondingBlockAtIntersection) {
+        while(Math.abs(intersection.x) < CANVAS_DIMENSIONS.x/2 && Math.abs(intersection.y) < CANVAS_DIMENSIONS.y / 2 && !correspondingBlockAtIntersection) {
             intersection.x = intersection.x + operationModifier * Math.tan(orientationAngle) * blockDimensions.y
             intersection.y = intersection.y + operationModifier * blockDimensions.y;
 
             correspondingBlockAtIntersection = getBlockAtIntersection(intersection);
         }
 
-        if(correspondingBlockAtIntersection === 1 || intersection.y === screenEnd) {
+        if(correspondingBlockAtIntersection === 1 || Math.abs(intersection.x) >= CANVAS_DIMENSIONS.x/2 || Math.abs(intersection.y) >+ CANVAS_DIMENSIONS.y / 2) {
             // ray hit a wall!
             // drawLine(player.coords, intersection, 2, 'red')
             return intersection
@@ -84,14 +84,14 @@ const castRayUntilVerticalCollision = (startingPoint: Coords, orientationAngle: 
         }
         let correspondingBlockAtIntersection = getBlockAtIntersection(intersection);
 
-        while(Math.abs(intersection.x) < CANVAS_DIMENSIONS.x/2 && !correspondingBlockAtIntersection) {
+        while(Math.abs(intersection.x) < CANVAS_DIMENSIONS.x/2 && Math.abs(intersection.y) < CANVAS_DIMENSIONS.y / 2 && !correspondingBlockAtIntersection) {
             intersection.x = intersection.x + operationModifier * blockDimensions.x;
             intersection.y = intersection.y + operationModifier * (1/Math.tan(orientationAngle)) * blockDimensions.x;
 
             correspondingBlockAtIntersection = getBlockAtIntersection(intersection);
         }
 
-        if(correspondingBlockAtIntersection === 1 || intersection.x === screenEnd) {
+        if(correspondingBlockAtIntersection === 1 || Math.abs(intersection.x) >= CANVAS_DIMENSIONS.x/2 || Math.abs(intersection.y) >+ CANVAS_DIMENSIONS.y / 2) {
             // ray hit a wall!
             // drawLine(player.coords, intersection, 2, 'red')
             return intersection
@@ -129,11 +129,11 @@ export const castRays = () => {
         }
 
 
-        // if(finalIntersection) {
-        //     drawLine(player.coords, finalIntersection, 2, 'red')
+        // if(intersectionVertical) {
+        //     drawLine(player.coords, intersectionVertical, 5, 'blue')
         // }
-        // if(finalIntersection) {
-        //     drawLine(player.coords, finalIntersection, 2, 'red')
+        // if(intersectionHorizontal) {
+        //     drawLine(player.coords, intersectionHorizontal, 2, 'yellow')
         // }
         if(finalIntersection) {
             drawLine(player.coords, finalIntersection, 2, 'red')
