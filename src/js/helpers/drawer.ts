@@ -74,7 +74,7 @@ export const drawBlocks = () => {
 export const drawPlayer = () => {
     //draw player square
     const playerSquareTopLeft = addToCanvasPos(player.coords, scalarMulVec(PLAYER_SQUARE_SIZE, -1/2));
-    drawRect(playerSquareTopLeft, PLAYER_SQUARE_SIZE, 'red')
+    drawRect(playerSquareTopLeft, PLAYER_SQUARE_SIZE, 'blue')
     //draw player orientation
     const orientationUnitVector = {
         x:Math.sin(player.orientation.angle),

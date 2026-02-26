@@ -26,9 +26,9 @@ setInterval(() => {
 
     drawBlocks();
 
-    drawPlayer();
-
     castRays();
+
+    drawPlayer();
 
     drawLegend();
 
