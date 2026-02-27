@@ -1,5 +1,6 @@
 import { blockDimensions, BLOCKS_ARRAY } from "./blocks";
 import { player, PLAYER_SQUARE_SIZE } from "./player";
+import { Ray, rays } from "./ray-caster";
 import { addToCanvasPos, addVec, scalarMulVec } from "./vectorOperations";
 
 export const CANVAS_DIMENSIONS: Coords = {
@@ -82,4 +83,11 @@ export const drawPlayer = () => {
     };
     drawLine(player.coords, addVec(player.coords, scalarMulVec(orientationUnitVector, 20)));
 
+}
+
+export const drawRays = () => {
+    rays.forEach(({ end }: Ray) => {
+        drawLine(player.coords, end, 2, 'red')
+
+    })
 }

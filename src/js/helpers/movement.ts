@@ -1,6 +1,5 @@
 import { FPS } from "../main";
 import { resolvePotentialCollisions } from "./collision-resolvers";
-import { CANVAS_DIMENSIONS } from "./drawer";
 import { movementKeysPressed } from "./eventListeners";
 import { player } from "./player";
 import { addVec, scalarMulVec } from "./vectorOperations";
