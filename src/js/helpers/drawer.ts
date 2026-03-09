@@ -8,6 +8,8 @@ export const CANVAS_DIMENSIONS: Coords = {
     y: 500,
 };
 
+export const SCREEN_END: Coords = scalarMulVec( CANVAS_DIMENSIONS, 1/2)
+
 export type Coords = {
     x: number;
     y: number

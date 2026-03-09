@@ -36,6 +36,8 @@ setInterval(() => {
 
     drawRaysAsWalls();
 
+    addDebuggerMessage(`Time to render a frame: ${Date.now() - now};`)
     drawLegend();
 
-}, 1000/FPS)
+
+}, 1000/FPS);

@@ -1,24 +1,111 @@
 import { blockDimensions, BLOCKS_ARRAY } from "./blocks";
 import { addDebuggerMessage, roundDec2 } from "./debugger";
-import { CANVAS_DIMENSIONS, Coords, drawLine } from "./drawer";
+import { Coords, SCREEN_END } from "./drawer";
 import { player } from "./player";
-import { scalarMulVec, subVec } from "./vectorOperations";
+import { subVec } from "./vectorOperations";
 
-const FIELD_OF_VIEW_ANGLE = Math.PI/3;
+const FIELD_OF_VIEW_ANGLE = Math.PI/6;
 const FIELD_OF_VIEW_RAY_INTERVAL = 0.01;
 
 export type Ray = {
-    end: Coords,
-    coordsSum: number,
+    end: Coords;
+    magnitude: number;
+    previousRayAngleDelta: number;
+    angle: number;
+    horizontalCollision?: boolean;// true if horizontal collision, false if vertical
+    hitBlockRelativePos?: false | number;// false if ray hasn't hit a block( so it went off the edge of the screen) or a ratio representing where it hit the block( useful for texture mapping later )
 }
 
-export let rays: Ray[] = [];
+// export const rays: Ray[] = Array.from({ length: Math.floor(FIELD_OF_VIEW_ANGLE * 2 / FIELD_OF_VIEW_RAY_INTERVAL) }, () => ({ 
+//     angle: 0,
+//     previousRayAngleDelta: FIELD_OF_VIEW_RAY_INTERVAL,
+//     magnitude: 0,
+//     end: {x: 0, y: 0}
+// }));
+
+let prevAngle = FIELD_OF_VIEW_ANGLE;
+const pixels = 500
+const halfFieldOfViewLength = Math.tan(FIELD_OF_VIEW_ANGLE)
+export const rays: Ray[] = Array.from({ length: pixels }, (v, i) => {
+    const currAngle = Math.atan(halfFieldOfViewLength * ( 1 - 2 * i / pixels ));// angle between player orientation and currently iterated ray
+    const angleDiff = prevAngle - currAngle;
+
+    prevAngle = currAngle;
+
+    return {
+        angle: 0,
+        previousRayAngleDelta: angleDiff,
+        end: {x: 0, y: 0},
+        magnitude: 0,
+        hitBlock: false,
+    }
+})
+// console.log('test rays', rays);
+
+export const computeRays = () => {
+
+    let fieldOfViewAngleStart = player.orientation.angle - FIELD_OF_VIEW_ANGLE; // field of view start
+    if(fieldOfViewAngleStart < 0) {
+        fieldOfViewAngleStart += Math.PI * 2
+    }
+    rays[0].angle = fieldOfViewAngleStart;
+    rays.forEach((ray: Ray, index) => {
+        if(index > 0) {
+            ray.angle = rays[index - 1].angle + ray.previousRayAngleDelta
+            if (ray.angle > Math.PI * 2) {
+                ray.angle -= Math.PI * 2
+            }
+        }
+
+        const {intersection: intersectionHorizontal, hitBlock: hitBlockHorizontal} = castRayUntilHorizontalCollision(player.coords, ray.angle);
+        const {intersection: intersectionVertical, hitBlock: hitBlockVertical} = castRayUntilVerticalCollision(player.coords, ray.angle);
+
+        // const {intersection: intersectionHorizontal, hitBlock: hitBlockHorizontal} = castRayUntilCollision(player.coords, ray.angle, 'horizontal');
+        // const {intersection: intersectionVertical, hitBlock: hitBlockVertical} = castRayUntilCollision(player.coords, ray.angle, 'vertical');
+
+        const distVecHorizontal = subVec(intersectionHorizontal, player.coords);
+        const distVecVertical = subVec(intersectionVertical, player.coords);
+
+        const coordsSumHorizontal = Math.abs(distVecHorizontal?.x || 0) + Math.abs(distVecHorizontal?.y || 0);
+        const coordsSumVertical = Math.abs(distVecVertical?.x || 0) + Math.abs(distVecVertical?.y || 0);
+
+        let finalIntersection: Coords;
+        let magnitude: number;
+        let horizontalCollision = false;
+        let hitBlock: false | number;
+        if (coordsSumHorizontal < coordsSumVertical) {
+            finalIntersection = intersectionHorizontal;
+            magnitude = Math.sqrt( distVecHorizontal.x ** 2 + distVecHorizontal.y ** 2 );
+            horizontalCollision = true;
+            hitBlock = hitBlockHorizontal ? (intersectionHorizontal.x % blockDimensions.x)/ blockDimensions.x : false;
+        } else {
+            finalIntersection = intersectionVertical;
+            magnitude = Math.sqrt( distVecVertical.x ** 2 + distVecVertical.y ** 2 );
+            hitBlock = hitBlockVertical ? (intersectionVertical.y % blockDimensions.y)/ blockDimensions.y : false;
+        }
+
+
+        // drawLine(player.coords, intersectionVertical, 5, 'blue')
+        // drawLine(player.coords, intersectionHorizontal, 2, 'yellow')
+        // drawLine(player.coords, finalIntersection, 2, 'red')
+        
+        ray.end = finalIntersection;
+        ray.magnitude = magnitude;
+        ray.horizontalCollision = horizontalCollision;
+        ray.hitBlockRelativePos = hitBlock ? Math.abs(hitBlock) : false;
+    });
+    // message += `${roundDec2(fieldOfViewAngle)},`;
+    // addDebuggerMessage(message)
+}
+
+const getBlockAtHorizontalIntersection = (intersection: Coords, isGoingAlongAxis: boolean) => {
+    const blockRowIndex = Math.floor((SCREEN_END.y - intersection.y)/blockDimensions.y) + (isGoingAlongAxis ? - 1 : 0);
+    const blockColIndex = Math.floor((SCREEN_END.x + intersection.x)/blockDimensions.x);
+    return BLOCKS_ARRAY[blockRowIndex]?.[blockColIndex];
+}
 
 const castRayUntilHorizontalCollision = (startingPoint: Coords, orientationAngle: number) => {
-    const SCREEN_END: Coords = scalarMulVec( CANVAS_DIMENSIONS, 1/2)
     const isGoingAlongAxis = orientationAngle > 3 * Math.PI/2 || orientationAngle < Math.PI/2;
-
-    const operationModifier = isGoingAlongAxis ? 1 : -1;
 
     let yDistanceToFirstBlock
     if(isGoingAlongAxis) {
@@ -27,37 +114,38 @@ const castRayUntilHorizontalCollision = (startingPoint: Coords, orientationAngle
         yDistanceToFirstBlock = startingPoint.y < 0 ? blockDimensions.y + (startingPoint.y % blockDimensions.y) : startingPoint.y % blockDimensions.y
     }
 
+    const operationModifier = isGoingAlongAxis ? 1 : -1;
+    const xyRatio = Math.tan(orientationAngle);
     const intersection = {
-        x: startingPoint.x + operationModifier * Math.tan(orientationAngle) * yDistanceToFirstBlock,
+        x: startingPoint.x + operationModifier * xyRatio * yDistanceToFirstBlock,
         y: startingPoint.y + operationModifier * yDistanceToFirstBlock
     }
+    let correspondingBlockAtIntersection = getBlockAtHorizontalIntersection(intersection, isGoingAlongAxis);
 
-    // addDebuggerMessage(`yDistanceToFirstBlock: ${yDistanceToFirstBlock}`);
-    // addDebuggerMessage(`yIntersection: ${intersection.y}`);
-
-    let getBlockAtIntersection = (intersection: Coords) => {        
-        const blockRowIndex = Math.round((SCREEN_END.y - intersection.y)/blockDimensions.y) + (isGoingAlongAxis ? - 1 : 0);
-        const blockColIndex = Math.floor((SCREEN_END.x + intersection.x)/blockDimensions.x);
-        // addDebuggerMessage(`checking if ray hits block at: (${blockColIndex}, ${blockRowIndex}) == ${BLOCKS_ARRAY[blockRowIndex]?.[blockColIndex]}`);
-        return BLOCKS_ARRAY[blockRowIndex]?.[blockColIndex];
-    }
-    let correspondingBlockAtIntersection = getBlockAtIntersection(intersection);
-
+    const deltaX = operationModifier * xyRatio * blockDimensions.y;
+    const deltaY = operationModifier * blockDimensions.y;
     while(Math.abs(intersection.x) < SCREEN_END.x && Math.abs(intersection.y) < SCREEN_END.y && !correspondingBlockAtIntersection) {
-        intersection.x = intersection.x + operationModifier * Math.tan(orientationAngle) * blockDimensions.y
-        intersection.y = intersection.y + operationModifier * blockDimensions.y;
+        intersection.x += deltaX
+        intersection.y += deltaY;
 
-        correspondingBlockAtIntersection = getBlockAtIntersection(intersection);
+        correspondingBlockAtIntersection = getBlockAtHorizontalIntersection(intersection, isGoingAlongAxis);
     }
 
-    return intersection
+
+    return {
+        intersection,
+        hitBlock: !!correspondingBlockAtIntersection,
+    };
+}
+
+const getBlockAtVerticalIntersection = (intersection: Coords, isGoingAlongAxis: boolean) => {
+        const blockRowIndex = Math.floor((SCREEN_END.y - intersection.y)/blockDimensions.y);
+        const blockColIndex = Math.floor((SCREEN_END.x + intersection.x)/blockDimensions.x) + (isGoingAlongAxis ? 0 : -1);
+        return BLOCKS_ARRAY[blockRowIndex]?.[blockColIndex];
 }
 
 const castRayUntilVerticalCollision = (startingPoint: Coords, orientationAngle: number) => {
-    const SCREEN_END: Coords = scalarMulVec( CANVAS_DIMENSIONS, 1/2)
     const isGoingAlongAxis = orientationAngle < Math.PI;
-
-    const operationModifier = isGoingAlongAxis ? 1 : -1;
 
     let xDistanceToFirstBlock;
     if(isGoingAlongAxis) {
@@ -66,66 +154,76 @@ const castRayUntilVerticalCollision = (startingPoint: Coords, orientationAngle: 
         xDistanceToFirstBlock = startingPoint.x < 0 ? blockDimensions.x + (startingPoint.x % blockDimensions.x) : startingPoint.x % blockDimensions.x
     }
 
+    const operationModifier = isGoingAlongAxis ? 1 : -1;
+    const yxRatio = 1/Math.tan(orientationAngle)
     const intersection = {
         x: startingPoint.x + operationModifier * xDistanceToFirstBlock,
-        y: startingPoint.y + operationModifier * (1/Math.tan(orientationAngle)) * xDistanceToFirstBlock
+        y: startingPoint.y + operationModifier * yxRatio * xDistanceToFirstBlock
     }
+    let correspondingBlockAtIntersection = getBlockAtVerticalIntersection(intersection, isGoingAlongAxis);
 
-    // addDebuggerMessage(`xDistanceToFirstBlock: ${xDistanceToFirstBlock}`);
-    // addDebuggerMessage(`yIntersection: ${intersection.y}`);
-
-    let getBlockAtIntersection = (intersection: Coords) => {        
-        const blockRowIndex = Math.floor((SCREEN_END.y - intersection.y)/blockDimensions.y);
-        const blockColIndex = Math.round((SCREEN_END.x + intersection.x)/blockDimensions.x) + (isGoingAlongAxis ? 0 : -1);
-        // addDebuggerMessage(`checking if ray hits block at: (${blockColIndex}, ${blockRowIndex}) == ${BLOCKS_ARRAY[blockRowIndex]?.[blockColIndex]}`);
-        return BLOCKS_ARRAY[blockRowIndex]?.[blockColIndex];
-    }
-    let correspondingBlockAtIntersection = getBlockAtIntersection(intersection);
-
+    const deltaX = operationModifier * blockDimensions.x;
+    const deltaY = operationModifier * yxRatio * blockDimensions.x;
     while(Math.abs(intersection.x) < SCREEN_END.x && Math.abs(intersection.y) < SCREEN_END.y && !correspondingBlockAtIntersection) {
-        intersection.x = intersection.x + operationModifier * blockDimensions.x;
-        intersection.y = intersection.y + operationModifier * (1/Math.tan(orientationAngle)) * blockDimensions.x;
+        intersection.x += deltaX;
+        intersection.y += deltaY;
 
-        correspondingBlockAtIntersection = getBlockAtIntersection(intersection);
+        correspondingBlockAtIntersection = getBlockAtVerticalIntersection(intersection, isGoingAlongAxis);
     }
 
-    return intersection;
+    return {
+        intersection,
+        hitBlock: !!correspondingBlockAtIntersection,
+    };
 }
 
-export const computeRays = () => {
 
-    let fieldOfViewAngle = player.orientation.angle - FIELD_OF_VIEW_ANGLE; // field of view start
-    if(fieldOfViewAngle < 0) {
-        fieldOfViewAngle += Math.PI * 2
-    }
-    let fieldOfViewEnd = fieldOfViewAngle + 2 * FIELD_OF_VIEW_ANGLE
-    let message = `${roundDec2(fieldOfViewAngle)} - ${roundDec2(fieldOfViewEnd)} : iterations: ${roundDec2(fieldOfViewAngle)},`;
-    rays.length = 0;// empty rays array fastest method
-    while(fieldOfViewAngle < fieldOfViewEnd) {
-        const normalizedFieldOfViewAngle = fieldOfViewAngle % (Math.PI * 2)
+// I unified the horizontal and vertical collision function but noticed framerate was a bit slower for some reason( less than 1ms slower for 1000 rays per radian)
+// const getBlockAtIntersection = (intersection: Coords, mainAxis: 'x' | 'y', isGoingAlongAxis: boolean) => {
+//     const blockRowIndex = Math.floor((SCREEN_END.y - intersection.y)/blockDimensions.y) + ( mainAxis === 'y' && isGoingAlongAxis ? -1 : 0 );
+//     const blockColIndex = Math.floor((SCREEN_END.x + intersection.x)/blockDimensions.x) + (mainAxis === 'x' && !isGoingAlongAxis ? -1 : 0);
+//     // addDebuggerMessage(`checking if ray hits block at: (${blockColIndex}, ${blockRowIndex}) == ${BLOCKS_ARRAY[blockRowIndex]?.[blockColIndex]}`);
+//     return BLOCKS_ARRAY[blockRowIndex]?.[blockColIndex];
+// }
 
-        const intersectionHorizontal = castRayUntilHorizontalCollision(player.coords, normalizedFieldOfViewAngle);
-        const intersectionVertical = castRayUntilVerticalCollision(player.coords, normalizedFieldOfViewAngle);
+// const castRayUntilCollision = (startingPoint: Coords, orientationAngle: number, collisionType: 'vertical' | 'horizontal') => {
+//     const mainAxis = collisionType === 'vertical' ? 'x' : 'y';
+//     const crossAxis = mainAxis === 'x' ? 'y' : 'x';
 
-        const distVecHorizontal = subVec(intersectionHorizontal, player.coords);
-        const distVecVertical = subVec(intersectionVertical, player.coords);
+//     let isGoingAlongMainAxis: boolean;
+//     if(mainAxis === 'x') {
+//         isGoingAlongMainAxis = orientationAngle < Math.PI;
+//     } else {
+//         isGoingAlongMainAxis = orientationAngle > 3 * Math.PI/2 || orientationAngle < Math.PI/2;
+//     }
 
-        const coordsSumHorizontal = Math.abs(distVecHorizontal?.x || 0) + Math.abs(distVecHorizontal?.y || 0);
-        const coordsSumVertical = Math.abs(distVecVertical?.x || 0) + Math.abs(distVecVertical?.y || 0);
+//     let mainAxisDistanceToFirstBlock
+//     if(isGoingAlongMainAxis) {
+//         mainAxisDistanceToFirstBlock = startingPoint[mainAxis] < 0 ? Math.abs(startingPoint[mainAxis] % blockDimensions[mainAxis]) : blockDimensions[mainAxis] - (startingPoint[mainAxis] % blockDimensions[mainAxis])
+//     } else {
+//         mainAxisDistanceToFirstBlock = startingPoint[mainAxis] < 0 ? blockDimensions[mainAxis] + (startingPoint[mainAxis] % blockDimensions[mainAxis]) : startingPoint[mainAxis] % blockDimensions[mainAxis]
+//     }
 
-        const finalIntersection = coordsSumHorizontal < coordsSumVertical ? intersectionHorizontal : intersectionVertical;
+//     const operationModifier = isGoingAlongMainAxis ? 1 : -1;
+//     const crossAxisRatio = crossAxis === 'x' ? Math.tan(orientationAngle) : 1/Math.tan(orientationAngle)
+//     const intersection = {
+//         [mainAxis]: startingPoint[mainAxis] + operationModifier * mainAxisDistanceToFirstBlock,
+//         [crossAxis]: startingPoint[crossAxis] + operationModifier * crossAxisRatio * mainAxisDistanceToFirstBlock,
+//     } as Coords;
+//     let correspondingBlockAtIntersection = getBlockAtIntersection(intersection, mainAxis, isGoingAlongMainAxis);
+
+//     const deltaMainAxis = operationModifier * blockDimensions[mainAxis];
+//     const deltaCrossAxis = operationModifier * crossAxisRatio * blockDimensions[mainAxis];
+//     while(Math.abs(intersection.x) < SCREEN_END.x && Math.abs(intersection.y) < SCREEN_END.y && !correspondingBlockAtIntersection) {
+//         intersection[mainAxis] += deltaMainAxis;
+//         intersection[crossAxis] += deltaCrossAxis;
+
+//         correspondingBlockAtIntersection = getBlockAtIntersection(intersection, mainAxis, isGoingAlongMainAxis);
+//     }
 
 
-        //     drawLine(player.coords, intersectionVertical, 5, 'blue')
-        //     drawLine(player.coords, intersectionHorizontal, 2, 'yellow')
-        rays.push({
-            end: finalIntersection,
-            coordsSum: Math.min(coordsSumHorizontal, coordsSumVertical)
-        });
-        // drawLine(player.coords, finalIntersection, 2, 'red')
-        
-        fieldOfViewAngle += FIELD_OF_VIEW_RAY_INTERVAL;
-    }
-    // message += `${roundDec2(fieldOfViewAngle)},`;
-    addDebuggerMessage(message)
-}
+//     return {
+//         intersection,
+//         hitBlock: !!correspondingBlockAtIntersection,
+//     };
+// }

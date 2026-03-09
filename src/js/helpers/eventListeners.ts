@@ -1,4 +1,3 @@
-
 export const movementKeysPressed = {
     up: false,
     down: false,

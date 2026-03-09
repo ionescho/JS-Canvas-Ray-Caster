@@ -17,8 +17,27 @@
             <canvas id="rayCaster" style="border:1px solid black;"></canvas>
             <canvas id="firstPersonPerspective" style="border:1px solid black;"></canvas>
         </div>
-        <div id="rayCasterDebugger" style="background-color: blanchedalmond; margin: 20px auto; height: 300px; width: 300px; font-size: 14px;"></div>
-        
+        <div  style="margin-top: 50px; display: flex; align-items: center; justify-content: space-around; width: 100%; position: relative;">
+            <div id="rayCasterDebugger" style="background-color: blanchedalmond; height: 300px; width: 300px; font-size: 14px;"></div>
+            <div id="config" style="background-color:chocolate; height: 300px; width: 500px; padding: 20px; user-select: none;">
+                <label>
+                    <input id="fishEyeCorrection" type="checkbox" checked/>
+                    Fisheye correction
+                </label>
+                <hr>
+                <div>
+                    <label>
+                        <input class="projectionType" name="projectionType" value="circular" checked type="radio">
+                        Circular Projection (constant angle between rays)
+                    </label>
+                    <br>
+                    <label>
+                        <input class="projectionType" name="projectionType" value="plane" type="radio">
+                        Projection Plane (ray angle varies)
+                    </label>
+                </div>
+            </div>
+        </div>
 
     </body>
 </html>
