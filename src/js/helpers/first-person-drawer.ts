@@ -16,20 +16,16 @@ let verticalPixelDistanceAlongRayFloorCorrespondent: number[][];// long name I k
 const initVirtualProjectionPlanePixelRayDistanceMappingForFloors = () => {
     VIRTUAL_PROJECTION_PLANE_HEIGHT = 2 * Math.tan(CONFIG.HALF_FIELD_OF_VIEW);
     
-    
-    let prevAngle = CONFIG.HALF_FIELD_OF_VIEW;
     const horizontalPixels = FIRST_PERSON_CANVAS_DIMENSIONS.x
     const verticalPixels = FIRST_PERSON_CANVAS_DIMENSIONS.y
     const halfFieldOfViewLength = Math.tan(CONFIG.HALF_FIELD_OF_VIEW)
     const playerHeight = blockDimensions.z / 2
     verticalPixelDistanceAlongRayFloorCorrespondent = Array.from({ length: horizontalPixels }, (v, i) => {
-        // const distanceFromObserverToVirtualPlaneVerticalPixelStrip = Math.tan()
+        const distanceFromObserverToVirtualPlaneVerticalPixelStrip = 1 / Math.cos((rays[i].angleFromOrientation));
 
         return Array.from({ length: Math.floor(verticalPixels / 2) }, (v, j) => {
-            const currAngle =  Math.atan(halfFieldOfViewLength * ( 1 - 2 * j / verticalPixels ));
+            const currAngle =  Math.atan(halfFieldOfViewLength * ( 1 - 2 * j / verticalPixels ) / distanceFromObserverToVirtualPlaneVerticalPixelStrip);
             const distanceAlongRay = playerHeight / Math.tan(currAngle)
-        
-            prevAngle = currAngle;
         
             return distanceAlongRay
         })
@@ -108,12 +104,14 @@ export const drawRaysAsWallsAndFloors = () => {
 
         }
 
-        if(verticalPixelsLeftForFloor > 0) {
+        if(verticalPixelsLeftForFloor > 0 && CONFIG.drawFloors) {
             //draw floors start
+            ctx.beginPath();
             const rayAngleUnitVector: Coords = {
                 x: Math.sin(ray.angle),
                 y: Math.cos(ray.angle)
             }
+
             verticalPixelDistanceAlongRayFloorCorrespondent[rayIndex].slice(0, verticalPixelsLeftForFloor).forEach((distance, pixelFromBottom) => {
                 const pointOnTheFloorToDraw = addVec(player.coords, scalarMulVec(rayAngleUnitVector, distance));
 
@@ -121,14 +119,13 @@ export const drawRaysAsWallsAndFloors = () => {
                 const floorShouldDraw = Math.abs((Math.floor(pointOnTheFloorToDraw.x/ blockDimensions.x) + Math.floor(pointOnTheFloorToDraw.y/ blockDimensions.y)) % 2 ) === 1;
 
                 if(floorShouldDraw) {
-                    ctx.beginPath();
                     ctx.rect(rayIndex * rayStripWidth, FIRST_PERSON_CANVAS_DIMENSIONS.y - pixelFromBottom, rayStripWidth, 1);
-                    ctx.fillStyle = `rgba(0, 0, 0, 1)`;
-                    ctx.fill();
+                    ctx.rect(rayIndex * rayStripWidth, pixelFromBottom, rayStripWidth, 1);
                 }
             })
+            ctx.fillStyle = `rgba(0, 0, 0, 1)`;
+            ctx.fill();
             //draw floors end
-
         }
 
 

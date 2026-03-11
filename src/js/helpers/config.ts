@@ -4,6 +4,7 @@ export const CONFIG = {
     applyFishEyeCorrection: true,
     rayCastingType: 'plane',
     applyTextures: true,
+    drawFloors: true,
 };
 
 export const configObservable: {
@@ -45,6 +46,12 @@ document.getElementById("fieldOfView")?.addEventListener('input', (event) => {
 
 document.getElementById("applyTextures")?.addEventListener('click', (event: MouseEvent) => {
     CONFIG.applyTextures = (event.target as HTMLInputElement)?.checked;
+
+    configObservable.callListeners();
+})
+
+document.getElementById("drawFloors")?.addEventListener('click', (event: MouseEvent) => {
+    CONFIG.drawFloors = (event.target as HTMLInputElement)?.checked;
 
     configObservable.callListeners();
 })

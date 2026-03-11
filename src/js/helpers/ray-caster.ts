@@ -6,7 +6,6 @@ import { FIRST_PERSON_CANVAS_DIMENSIONS } from "./first-person-drawer";
 import { player } from "./player";
 import { subVec } from "./vectorOperations";
 
-
 export type Ray = {
     end: Coords;
     magnitude: number;
@@ -16,6 +15,8 @@ export type Ray = {
     horizontalCollision?: boolean;// true if horizontal collision, false if vertical
     hitBlockRelativePos?: false | number;// false if ray hasn't hit a block( so it went off the edge of the screen) or a ratio representing where it hit the block( useful for texture mapping later )
 }
+
+export let rays: Ray[];
 
 let circularProjectionRays: Ray[];
 let projectionPlaneRays: Ray[];
@@ -51,12 +52,17 @@ const initRayArrays = () => {
             hitBlock: false,
         }
     })
+
+    if(CONFIG.rayCastingType === 'circular') {
+        rays = circularProjectionRays;
+    } else {
+        rays = projectionPlaneRays;
+
+    }
 }
 
 initRayArrays();
 configObservable.registerListener(initRayArrays)
-
-export let rays: Ray[];
 
 export const computeRays = () => {
 
