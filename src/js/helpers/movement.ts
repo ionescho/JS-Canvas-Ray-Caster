@@ -20,11 +20,15 @@ export const updateOrientation = () => {
 
 export const updatePosition = () => {
 
-    if(movementKeysPressed.up || movementKeysPressed.down) {
+    if(movementKeysPressed.up || movementKeysPressed.down || movementKeysPressed.strafeLeft || movementKeysPressed.strafeRight) {
 
         let movementDirection = player.orientation.angle
         if(movementKeysPressed.down) {
             movementDirection = player.orientation.angle + Math.PI
+        } else if(movementKeysPressed.strafeLeft) {
+            movementDirection = player.orientation.angle - Math.PI / 2
+        } else if(movementKeysPressed.strafeRight) {
+            movementDirection = player.orientation.angle + Math.PI / 2
         }
         // update direction vector(used to transform direction angle into actionable position change x and y)
         player.movement.speedVector.x = Math.sin(movementDirection) * player.speed;

@@ -1,50 +1,73 @@
 import { blockDimensions, BLOCKS_ARRAY } from "./blocks";
+import { CONFIG, configObservable } from "./config";
 import { addDebuggerMessage, roundDec2 } from "./debugger";
 import { Coords, SCREEN_END } from "./drawer";
+import { FIRST_PERSON_CANVAS_DIMENSIONS } from "./first-person-drawer";
 import { player } from "./player";
 import { subVec } from "./vectorOperations";
 
-const FIELD_OF_VIEW_ANGLE = Math.PI/6;
-const FIELD_OF_VIEW_RAY_INTERVAL = 0.01;
 
 export type Ray = {
     end: Coords;
     magnitude: number;
+    angleFromOrientation: number;
     previousRayAngleDelta: number;
     angle: number;
     horizontalCollision?: boolean;// true if horizontal collision, false if vertical
     hitBlockRelativePos?: false | number;// false if ray hasn't hit a block( so it went off the edge of the screen) or a ratio representing where it hit the block( useful for texture mapping later )
 }
 
-// export const rays: Ray[] = Array.from({ length: Math.floor(FIELD_OF_VIEW_ANGLE * 2 / FIELD_OF_VIEW_RAY_INTERVAL) }, () => ({ 
-//     angle: 0,
-//     previousRayAngleDelta: FIELD_OF_VIEW_RAY_INTERVAL,
-//     magnitude: 0,
-//     end: {x: 0, y: 0}
-// }));
+let circularProjectionRays: Ray[];
+let projectionPlaneRays: Ray[];
 
-let prevAngle = FIELD_OF_VIEW_ANGLE;
-const pixels = 500
-const halfFieldOfViewLength = Math.tan(FIELD_OF_VIEW_ANGLE)
-export const rays: Ray[] = Array.from({ length: pixels }, (v, i) => {
-    const currAngle = Math.atan(halfFieldOfViewLength * ( 1 - 2 * i / pixels ));// angle between player orientation and currently iterated ray
-    const angleDiff = prevAngle - currAngle;
+const initRayArrays = () => {
+    const FIELD_OF_VIEW_RAY_INTERVAL = 0.001;
 
-    prevAngle = currAngle;
-
-    return {
+    //circular projection
+    circularProjectionRays = Array.from({ length: Math.floor(CONFIG.HALF_FIELD_OF_VIEW * 2 / FIELD_OF_VIEW_RAY_INTERVAL) }, (v, i) => ({ 
         angle: 0,
-        previousRayAngleDelta: angleDiff,
-        end: {x: 0, y: 0},
+        angleFromOrientation: CONFIG.HALF_FIELD_OF_VIEW - ( FIELD_OF_VIEW_RAY_INTERVAL * i ),
+        previousRayAngleDelta: FIELD_OF_VIEW_RAY_INTERVAL,
         magnitude: 0,
-        hitBlock: false,
-    }
-})
-// console.log('test rays', rays);
+        end: {x: 0, y: 0}
+    }));
+    
+    //projection plane
+    let prevAngle = CONFIG.HALF_FIELD_OF_VIEW;
+    const pixels = FIRST_PERSON_CANVAS_DIMENSIONS.x
+    const halfFieldOfViewLength = Math.tan(CONFIG.HALF_FIELD_OF_VIEW)
+    projectionPlaneRays = Array.from({ length: pixels }, (v, i) => {
+        const currAngle = Math.atan(halfFieldOfViewLength * ( 1 - 2 * i / pixels ));// angle between player orientation and currently iterated ray
+        const angleDiff = prevAngle - currAngle;
+    
+        prevAngle = currAngle;
+    
+        return {
+            angle: 0,
+            angleFromOrientation: currAngle,
+            previousRayAngleDelta: angleDiff,
+            end: {x: 0, y: 0},
+            magnitude: 0,
+            hitBlock: false,
+        }
+    })
+}
+
+initRayArrays();
+configObservable.registerListener(initRayArrays)
+
+export let rays: Ray[];
 
 export const computeRays = () => {
 
-    let fieldOfViewAngleStart = player.orientation.angle - FIELD_OF_VIEW_ANGLE; // field of view start
+    if(CONFIG.rayCastingType === 'circular') {
+        rays = circularProjectionRays;
+    } else {
+        rays = projectionPlaneRays;
+
+    }
+
+    let fieldOfViewAngleStart = player.orientation.angle - CONFIG.HALF_FIELD_OF_VIEW; // field of view start
     if(fieldOfViewAngleStart < 0) {
         fieldOfViewAngleStart += Math.PI * 2
     }

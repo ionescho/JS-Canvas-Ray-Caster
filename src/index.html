@@ -27,15 +27,26 @@
                 <hr>
                 <div>
                     <label>
-                        <input class="projectionType" name="projectionType" value="circular" checked type="radio">
-                        Circular Projection (constant angle between rays)
+                        <input class="projectionType" name="projectionType" value="circular" type="radio">
+                        Circular Projection (constant angle between rays - bad)
                     </label>
                     <br>
                     <label>
-                        <input class="projectionType" name="projectionType" value="plane" type="radio">
-                        Projection Plane (ray angle varies)
+                        <input class="projectionType" name="projectionType" value="plane" checked type="radio">
+                        Projection Plane (ray angle varies - good)
                     </label>
                 </div>
+                <hr>
+                <label>
+                    <input id="fieldOfView" type="range" min="0.3" max="3.1" step="0.01"/>
+                    Field of view
+                    (<span id="fieldOfViewValue">30</span> deg)
+                </label>
+                <hr>
+                <label>
+                    <input id="applyTextures" type="checkbox" checked/>
+                    Apply Textures
+                </label>
             </div>
         </div>
 

@@ -3,6 +3,8 @@ export const movementKeysPressed = {
     down: false,
     left: false,
     right: false,
+    strafeLeft: false,
+    strafeRight: false,
 }
 
 window.addEventListener('keydown', (event:KeyboardEvent) => {
@@ -11,7 +13,7 @@ window.addEventListener('keydown', (event:KeyboardEvent) => {
         case 'ArrowUp':
             movementKeysPressed.up = true
             break;
-        case 'a':
+        case 'q':
         case 'ArrowLeft':
             movementKeysPressed.left = true
             break;
@@ -19,9 +21,15 @@ window.addEventListener('keydown', (event:KeyboardEvent) => {
         case 'ArrowDown':
             movementKeysPressed.down = true
             break;
-        case 'd':
+        case 'e':
         case 'ArrowRight':
             movementKeysPressed.right = true
+            break;
+        case 'a':
+            movementKeysPressed.strafeLeft = true
+            break;
+        case 'd':
+            movementKeysPressed.strafeRight = true
             break;
     }
 })
@@ -31,7 +39,7 @@ window.addEventListener('keyup', (event:KeyboardEvent) => {
         case 'ArrowUp':
             movementKeysPressed.up = false
             break;
-        case 'a':
+        case 'q':
         case 'ArrowLeft':
             movementKeysPressed.left = false
             break;
@@ -39,9 +47,15 @@ window.addEventListener('keyup', (event:KeyboardEvent) => {
         case 'ArrowDown':
             movementKeysPressed.down = false
             break;
-        case 'd':
+        case 'e':
         case 'ArrowRight':
             movementKeysPressed.right = false
+            break;
+        case 'a':
+            movementKeysPressed.strafeLeft = false
+            break;
+        case 'd':
+            movementKeysPressed.strafeRight = false
             break;
     }
 })
