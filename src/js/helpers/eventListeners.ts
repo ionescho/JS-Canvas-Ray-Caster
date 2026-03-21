@@ -59,3 +59,29 @@ window.addEventListener('keyup', (event:KeyboardEvent) => {
             break;
     }
 })
+
+const firstPersonCanvas: HTMLCanvasElement = document.getElementById('firstPersonPerspective') as HTMLCanvasElement;
+firstPersonCanvas.addEventListener("click", async () => {
+  if (!document.pointerLockElement) {
+    await firstPersonCanvas.requestPointerLock({
+      unadjustedMovement: true,
+    });
+  }
+});
+
+let mouseStopTimeout;
+firstPersonCanvas.addEventListener('mousemove', function(e) {
+
+    if (document.pointerLockElement===firstPersonCanvas) {
+        if(mouseStopTimeout) {
+            clearTimeout(mouseStopTimeout)
+        }
+        movementKeysPressed[e.movementX < 0 ? 'left' : 'right'] = true
+        setTimeout(() => {
+            movementKeysPressed.left = false;
+            movementKeysPressed.right = false;
+        }, 20)
+    } else {
+        // ignore
+    }
+}, false);

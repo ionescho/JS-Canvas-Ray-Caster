@@ -13,6 +13,8 @@ const bla = () =>  resolvePotentialCollisions({x:0, y:0})// daca sterg asta, cra
 
 let timeBeforeNewInterval = Date.now();
 
+
+
 setInterval(() => {
     debuggerMessages.splice(0, debuggerMessages.length);
     const now = Date.now();
