@@ -18,10 +18,3 @@ export const scalarMulVec = (a: Coords, scalar: number): Coords => {
         y: a.y * scalar,
     }
 }
-
-export const addToCanvasPos = (a: Coords, d: Coords) => {
-    return {
-        x: a.x + d.x,
-        y: a.y - d.y,
-    }
-}

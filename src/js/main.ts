@@ -16,7 +16,7 @@ let timeBeforeNewInterval = Date.now();
 
 
 setInterval(() => {
-    debuggerMessages.splice(0, debuggerMessages.length);
+    debuggerMessages.length = 0;
     const now = Date.now();
     addDebuggerMessage(`Actual time between 2 frames: ${now - timeBeforeNewInterval};`)
     timeBeforeNewInterval = now;

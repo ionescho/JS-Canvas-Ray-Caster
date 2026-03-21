@@ -7,17 +7,17 @@ import { addVec, scalarMulVec, subVec } from "./vectorOperations";
 const checkEdgeOfScreenCollisions = (potentialFuturePlayerPos: Coords): Coords => {
 
     // collision edge of screen
-    if(potentialFuturePlayerPos.x < -CANVAS_DIMENSIONS.x/2) {
-        potentialFuturePlayerPos.x = -CANVAS_DIMENSIONS.x/2
+    if(potentialFuturePlayerPos.x < 0) {
+        potentialFuturePlayerPos.x = 0
     }
-    if(potentialFuturePlayerPos.x > CANVAS_DIMENSIONS.x/2) {
-        potentialFuturePlayerPos.x = CANVAS_DIMENSIONS.x/2
+    if(potentialFuturePlayerPos.x > CANVAS_DIMENSIONS.x) {
+        potentialFuturePlayerPos.x = CANVAS_DIMENSIONS.x
     }
-    if(potentialFuturePlayerPos.y < -CANVAS_DIMENSIONS.y/2) {
-        potentialFuturePlayerPos.y = -CANVAS_DIMENSIONS.y/2
+    if(potentialFuturePlayerPos.y < 0) {
+        potentialFuturePlayerPos.y = 0
     }
-    if(potentialFuturePlayerPos.y > CANVAS_DIMENSIONS.y/2) {
-        potentialFuturePlayerPos.y = CANVAS_DIMENSIONS.y/2
+    if(potentialFuturePlayerPos.y > CANVAS_DIMENSIONS.y) {
+        potentialFuturePlayerPos.y = CANVAS_DIMENSIONS.y
     }
 
     return potentialFuturePlayerPos;
@@ -29,11 +29,11 @@ const checkPlayerBlockCollision = (potentialFuturePlayerPos: Coords, blockX: num
     const potentialFuturePlayerBounds = {
         start: {
             x: potentialFuturePlayerPos.x - PLAYER_SQUARE_SIZE.x / 2,
-            y: potentialFuturePlayerPos.y + PLAYER_SQUARE_SIZE.y / 2
+            y: potentialFuturePlayerPos.y - PLAYER_SQUARE_SIZE.y / 2
         },
         end: {
             x: potentialFuturePlayerPos.x + PLAYER_SQUARE_SIZE.x / 2,
-            y: potentialFuturePlayerPos.y - PLAYER_SQUARE_SIZE.y / 2
+            y: potentialFuturePlayerPos.y + PLAYER_SQUARE_SIZE.y / 2
         }
     }
     addDebuggerMessage(`Player start ${roundDec2(potentialFuturePlayerBounds.start.x)},${roundDec2(potentialFuturePlayerBounds.start.y)} with end: (${roundDec2(potentialFuturePlayerBounds.end.x)}, ${roundDec2(potentialFuturePlayerBounds.end.y)})`);
@@ -41,12 +41,12 @@ const checkPlayerBlockCollision = (potentialFuturePlayerPos: Coords, blockX: num
     //calculate block bounds
     const block = {
         start: {
-            x: blockX * blockDimensions.x - CANVAS_DIMENSIONS.x / 2,
-            y: -blockY * blockDimensions.y + CANVAS_DIMENSIONS.y / 2
+            x: blockX * blockDimensions.x,
+            y: blockY * blockDimensions.y
         },
         end: {
-            x: (blockX + 1) * blockDimensions.x - CANVAS_DIMENSIONS.x / 2,
-            y: -(blockY + 1) * blockDimensions.y + CANVAS_DIMENSIONS.y / 2
+            x: (blockX + 1) * blockDimensions.x,
+            y: (blockY + 1) * blockDimensions.y
         }
     }
     addDebuggerMessage(`Block to check start ${roundDec2(block.start.x)},${roundDec2(block.start.y)} with end: (${roundDec2(block.end.x)}, ${roundDec2(block.end.y)})`);
@@ -54,7 +54,7 @@ const checkPlayerBlockCollision = (potentialFuturePlayerPos: Coords, blockX: num
     //calculate penetration based on the former 2
     const penetration = {
         x: isGoingLeft ? block.end.x - potentialFuturePlayerBounds.start.x : potentialFuturePlayerBounds.end.x - block.start.x,
-        y: isGoingUp ? potentialFuturePlayerBounds.start.y - block.end.y : block.start.y - potentialFuturePlayerBounds.end.y,
+        y: isGoingUp ? block.end.y - potentialFuturePlayerBounds.start.y : potentialFuturePlayerBounds.end.y - block.start.y,
     }
     if(penetration.x > 0 && penetration.y > 0) {
         addDebuggerMessage(`Collision with block ${blockX},${blockY} with penetrations: (${roundDec2(penetration.x)}, ${roundDec2(penetration.y)})`);
@@ -88,7 +88,7 @@ export const resolvePotentialCollisions = (potentialFuturePlayerPos: Coords) => 
     addDebuggerMessage(`Sector(X,Y): (${playerSector.x + 1}, ${playerSector.y + 1})`);
     
     //then determine which direction the player is looking towards(up, left, down, right)
-    let isGoingUp = player.movement.speedVector.y > 0;
+    let isGoingUp = player.movement.speedVector.y < 0;
     let isGoingLeft = player.movement.speedVector.x < 0;
     addDebuggerMessage(`Going: (${isGoingUp ? 'Up':'Down'}, ${isGoingLeft? 'Left' : 'Right'})`);
  

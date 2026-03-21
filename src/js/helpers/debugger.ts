@@ -20,7 +20,7 @@ export const drawLegend = () => {
     debuggerEl.innerHTML = '';
 
     const initialDebuggerMessages = [
-        `Orientation: ${roundDec2(player.orientation.angle)} rad`,
+        `Orientation: ${roundDec2(player.orientation.angle)} rad (${roundDec2(player.orientation.angle / Math.PI * 180)} deg)`,
         `Player (X,Y): (${roundDec2(player.coords.x)}, ${roundDec2(player.coords.y)})`,
         `Canvas (width,height): (${roundDec2(CANVAS_DIMENSIONS.x)}, ${roundDec2(CANVAS_DIMENSIONS.y)})`
     ];

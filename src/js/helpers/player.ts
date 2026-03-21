@@ -1,5 +1,5 @@
 import { blockDimensions } from "./blocks";
-import { CANVAS_DIMENSIONS, Coords } from "./drawer";
+import { Coords } from "./drawer";
 
 type Player = {
     coords: Coords;
@@ -20,7 +20,7 @@ export const PLAYER_SQUARE_SIZE: Coords = {
 }
 
 export const player: Player = {
-    coords: { x: 50, y: 50 }, // player x, y coordinates
+    coords: { x: 250, y: 250 }, // player x, y coordinates
     speed: 50, // fixed player speed potential in pixels per second( assuming no obstructions ),
     orientation: {
         angle: 0, //orientation angle in radians
@@ -33,7 +33,7 @@ export const player: Player = {
         }
     },
     getSector: () => ({
-        x: Math.floor((player.coords.x + CANVAS_DIMENSIONS.x/2) / blockDimensions.x),
-        y: Math.floor((- player.coords.y + CANVAS_DIMENSIONS.y/2) / blockDimensions.y)
+        x: Math.floor(player.coords.x / blockDimensions.x),
+        y: Math.floor(player.coords.y / blockDimensions.y)
     })
 }

@@ -1,14 +1,12 @@
 import { blockDimensions, BLOCKS_ARRAY } from "./blocks";
 import { player, PLAYER_SQUARE_SIZE } from "./player";
 import { Ray, rays } from "./ray-caster";
-import { addToCanvasPos, addVec, scalarMulVec } from "./vectorOperations";
+import { addVec, scalarMulVec } from "./vectorOperations";
 
 export const CANVAS_DIMENSIONS: Coords = {
     x: 500,
     y: 500,
 };
-
-export const SCREEN_END: Coords = scalarMulVec( CANVAS_DIMENSIONS, 1/2)
 
 export type Coords = {
     x: number;
@@ -20,20 +18,12 @@ canvas.setAttribute('width', `${CANVAS_DIMENSIONS.x}px`);
 canvas.setAttribute('height', `${CANVAS_DIMENSIONS.y}px`);
 const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-const mapNormalXYIntoCanvasXY = ({x, y}: Coords): Coords => {
-    const canvasX = x + CANVAS_DIMENSIONS.x / 2;
-    const canvasY = CANVAS_DIMENSIONS.y / 2 - y;
-
-    return { x: canvasX, y: canvasY };
-}
-
 export const emptyCanvas = () => ctx.reset();
 
 export const drawRect = (coords: Coords, size: Coords, color?: string) => {
 
-    const mappedCoords = mapNormalXYIntoCanvasXY(coords);
     ctx.beginPath();
-    ctx.rect(mappedCoords.x, mappedCoords.y, size.x, size.y);
+    ctx.rect(coords.x, coords.y, size.x, size.y);
     if(color) {
         ctx.fillStyle = color;
         ctx.fill();
@@ -45,19 +35,11 @@ export const drawRect = (coords: Coords, size: Coords, color?: string) => {
 
 export const drawLine = (start: Coords, end: Coords, lineWidth: number = 1, color: string = 'black') => {
     ctx.beginPath();
-    const mappedCoordsStart = mapNormalXYIntoCanvasXY(start);
-    ctx.moveTo(mappedCoordsStart.x, mappedCoordsStart.y);
-    const mappedCoordsEnd = mapNormalXYIntoCanvasXY(end);
-    ctx.lineTo(mappedCoordsEnd.x, mappedCoordsEnd.y);
+    ctx.moveTo(start.x, start.y);
+    ctx.lineTo(end.x, end.y);
     ctx.strokeStyle = color;
     ctx.lineWidth = lineWidth;
     ctx.stroke();
-}
-
-export const placeText = (pos: Coords, text: string) => {
-    ctx.font = "12px serif";
-    const mappedCoords = mapNormalXYIntoCanvasXY(pos);
-    ctx.fillText(text, mappedCoords.x, mappedCoords.y);
 }
 
 export const drawBlocks = () => {
@@ -66,8 +48,8 @@ export const drawBlocks = () => {
         if(block >= 1) {
             // draw block at i j
             drawRect({
-                x: j * blockDimensions.x - CANVAS_DIMENSIONS.x / 2,
-                y: - i * blockDimensions.y + CANVAS_DIMENSIONS.y / 2
+                x: j * blockDimensions.x,
+                y: i * blockDimensions.y
             }, blockDimensions);
         }
     }))
@@ -76,7 +58,7 @@ export const drawBlocks = () => {
 
 export const drawPlayer = () => {
     //draw player square
-    const playerSquareTopLeft = addToCanvasPos(player.coords, scalarMulVec(PLAYER_SQUARE_SIZE, -1/2));
+    const playerSquareTopLeft = addVec(player.coords, scalarMulVec(PLAYER_SQUARE_SIZE, -1/2));
     drawRect(playerSquareTopLeft, PLAYER_SQUARE_SIZE, 'blue')
     //draw player orientation
     const orientationUnitVector = {
