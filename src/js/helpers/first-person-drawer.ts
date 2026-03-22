@@ -49,7 +49,7 @@ export const drawRaysAsWallsAndFloors = () => {
 
     rays.forEach((ray: Ray, rayIndex) => {
         let verticalPixelsLeftForFloor: number = FIRST_PERSON_CANVAS_DIMENSIONS.y/2;
-        if(ray.hitBlockRelativePos) {
+        if(ray.blockHitRelativePos) {
             // if ray hit a wall, we draw it
             let fishEyeCorrection = 1;
             if(CONFIG.applyFishEyeCorrection) {
@@ -65,7 +65,7 @@ export const drawRaysAsWallsAndFloors = () => {
             const wallStartY = FIRST_PERSON_CANVAS_DIMENSIONS.y/2 - rayStripHeight/2;
     
             if(CONFIG.applyTextures) {
-                const wallVerticalFragmentStripIndex = Math.floor(ray.hitBlockRelativePos * wallTextures[0].length);
+                const wallVerticalFragmentStripIndex = Math.floor(ray.blockHitRelativePos * wallTextures[0].length);
                 const correspondingTextureStrip = wallTextures.map((textureRow) => textureRow[wallVerticalFragmentStripIndex]);
         
                 // let finishedDrawingStrip = false;

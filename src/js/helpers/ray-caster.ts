@@ -1,7 +1,6 @@
 import { blockDimensions, BLOCKS_ARRAY } from "./blocks";
 import { CONFIG, configObservable } from "./config";
-import { addDebuggerMessage, roundDec2 } from "./debugger";
-import { CANVAS_DIMENSIONS, Coords, SCREEN_END } from "./drawer";
+import { CANVAS_DIMENSIONS, Coords } from "./drawer";
 import { FIRST_PERSON_CANVAS_DIMENSIONS } from "./first-person-drawer";
 import { player } from "./player";
 import { subVec } from "./vectorOperations";
@@ -13,7 +12,7 @@ export type Ray = {
     previousRayAngleDelta: number;
     angle: number;
     horizontalCollision?: boolean;// true if horizontal collision, false if vertical
-    hitBlockRelativePos?: false | number;// false if ray hasn't hit a block( so it went off the edge of the screen) or a ratio representing where it hit the block( useful for texture mapping later )
+    blockHitRelativePos?: null | number;// null if ray hasn't hit a block( so it went off the edge of the screen) or a ratio representing where it hit the block( useful for texture mapping later )
 }
 
 export let rays: Ray[];
@@ -86,28 +85,28 @@ export const computeRays = () => {
             }
         }
 
-        const {intersection: intersectionHorizontal, hitBlock: hitBlockHorizontal} = castRayUntilCollision(player.coords, ray.angle, 'horizontal');
-        const {intersection: intersectionVertical, hitBlock: hitBlockVertical} = castRayUntilCollision(player.coords, ray.angle, 'vertical');
+        const {intersection: intersectionHorizontal, blockHitRelativePos: blockHitHorizontal} = castRayUntilCollision(player.coords, ray.angle, 'horizontal');
+        const {intersection: intersectionVertical, blockHitRelativePos: blockHitVertical} = castRayUntilCollision(player.coords, ray.angle, 'vertical');
 
         const distVecHorizontal = subVec(intersectionHorizontal, player.coords);
         const distVecVertical = subVec(intersectionVertical, player.coords);
 
-        const coordsSumHorizontal = Math.abs(distVecHorizontal?.x || 0) + Math.abs(distVecHorizontal?.y || 0);
-        const coordsSumVertical = Math.abs(distVecVertical?.x || 0) + Math.abs(distVecVertical?.y || 0);
+        const coordsSumHorizontal = Math.abs(distVecHorizontal?.x || 0) + Math.abs(distVecHorizontal?.y || 0); // manhattan distance
+        const coordsSumVertical = Math.abs(distVecVertical?.x || 0) + Math.abs(distVecVertical?.y || 0); // manhattan distance
 
         let finalIntersection: Coords;
         let magnitude: number;
         let horizontalCollision = false;
-        let hitBlock: false | number;
+        let blockHitRelativePos: null | number;
         if (coordsSumHorizontal < coordsSumVertical) {
             finalIntersection = intersectionHorizontal;
-            magnitude = Math.sqrt( distVecHorizontal.x ** 2 + distVecHorizontal.y ** 2 );// should employ a better way to compute magnitude(using sin and cos of angle and x and y components since it is less costly than sqrt)
+            magnitude = Math.sqrt( distVecHorizontal.x ** 2 + distVecHorizontal.y ** 2 );// should employ a better way to compute magnitude(using sin and cos of angle and x and y components since it is less costly than sqrt ... I think)
             horizontalCollision = true;
-            hitBlock = hitBlockHorizontal ? (intersectionHorizontal.x % blockDimensions.x)/ blockDimensions.x : false;
+            blockHitRelativePos = blockHitHorizontal;
         } else {
             finalIntersection = intersectionVertical;
-            magnitude = Math.sqrt( distVecVertical.x ** 2 + distVecVertical.y ** 2 );// should employ a better way to compute magnitude(using sin and cos of angle and x and y components since it is less costly than sqrt)
-            hitBlock = hitBlockVertical ? (intersectionVertical.y % blockDimensions.y)/ blockDimensions.y : false;
+            magnitude = Math.sqrt( distVecVertical.x ** 2 + distVecVertical.y ** 2 );// should employ a better way to compute magnitude(using sin and cos of angle and x and y components since it is less costly than sqrt ... I think)
+            blockHitRelativePos = blockHitVertical;
         }
 
 
@@ -118,13 +117,13 @@ export const computeRays = () => {
         ray.end = finalIntersection;
         ray.magnitude = magnitude;
         ray.horizontalCollision = horizontalCollision;
-        ray.hitBlockRelativePos = hitBlock ? Math.abs(hitBlock) : false;
+        ray.blockHitRelativePos = blockHitRelativePos;
     });
     // message += `${roundDec2(fieldOfViewAngle)},`;
     // addDebuggerMessage(message)
 }
 
-const getBlockAtIntersection = (intersection: Coords, mainAxis: 'x' | 'y', isGoingAlongAxis: boolean) => {
+const checkBlockHit = (intersection: Coords, mainAxis: 'x' | 'y', isGoingAlongAxis: boolean) => {
     const blockRowIndex = Math.floor(intersection.y/blockDimensions.y) + ( mainAxis === 'y' && !isGoingAlongAxis ? -1 : 0 );
     const blockColIndex = Math.floor(intersection.x/blockDimensions.x) + (mainAxis === 'x' && !isGoingAlongAxis ? -1 : 0);
     // addDebuggerMessage(`checking if ray hits block at: (${blockColIndex}, ${blockRowIndex}) == ${BLOCKS_ARRAY[blockRowIndex]?.[blockColIndex]}`);
@@ -155,20 +154,30 @@ const castRayUntilCollision = (startingPoint: Coords, orientationAngle: number, 
         [mainAxis]: startingPoint[mainAxis] + operationModifier * mainAxisDistanceToFirstBlock,
         [crossAxis]: startingPoint[crossAxis] + operationModifier * crossAxisRatio * mainAxisDistanceToFirstBlock,
     } as Coords;
-    let correspondingBlockAtIntersection = getBlockAtIntersection(intersection, mainAxis, isGoingAlongMainAxis);
+    let blockHit = checkBlockHit(intersection, mainAxis, isGoingAlongMainAxis);
 
     const deltaMainAxis = operationModifier * blockDimensions[mainAxis];
     const deltaCrossAxis = operationModifier * crossAxisRatio * blockDimensions[mainAxis];
-    while(Math.abs(intersection.x) < CANVAS_DIMENSIONS.x && Math.abs(intersection.y) < CANVAS_DIMENSIONS.y && !correspondingBlockAtIntersection) {
+    while(Math.abs(intersection.x) < CANVAS_DIMENSIONS.x && Math.abs(intersection.y) < CANVAS_DIMENSIONS.y && !blockHit) {
         intersection[mainAxis] += deltaMainAxis;
         intersection[crossAxis] += deltaCrossAxis;
 
-        correspondingBlockAtIntersection = getBlockAtIntersection(intersection, mainAxis, isGoingAlongMainAxis);
+        blockHit = checkBlockHit(intersection, mainAxis, isGoingAlongMainAxis);
+    }
+
+    let blockHitRelativePos: number | null = null;
+    if(blockHit) {
+        blockHitRelativePos = (intersection[crossAxis] % blockDimensions[crossAxis]) / blockDimensions[crossAxis]
+        if(isGoingAlongMainAxis  ===  (collisionType ==='horizontal')) { 
+            // XNOR basically - we need to flip the texture if seeing a horizontal face looking down along the vertical axis or if we see a vertical face against the horizontal axis,
+            // this is because in those situations, the cross axis is increasing from right to left while we have the texture bitmap indexes defined from left to right.. hence the need to flip
+            blockHitRelativePos = 1 - blockHitRelativePos;
+        }
     }
 
 
     return {
         intersection,
-        hitBlock: !!correspondingBlockAtIntersection,
+        blockHitRelativePos,
     };
 }
