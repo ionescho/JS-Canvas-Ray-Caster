@@ -5,6 +5,7 @@ export const CONFIG = {
     rayCastingType: 'plane',
     applyTextures: true,
     drawFloors: true,
+    firstPersonDrawMethod: 'rects',
 };
 
 export const configObservable: {
@@ -55,3 +56,11 @@ document.getElementById("drawFloors")?.addEventListener('click', (event: MouseEv
 
     configObservable.callListeners();
 })
+
+document.querySelectorAll(".firstPersonDrawMethod").forEach((element) => {
+    (element as HTMLInputElement).addEventListener('click', (event: MouseEvent) => {
+        CONFIG.firstPersonDrawMethod = (event.target as HTMLInputElement)?.value;
+
+        configObservable.callListeners();
+    })
+});

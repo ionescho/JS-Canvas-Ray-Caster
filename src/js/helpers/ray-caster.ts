@@ -1,7 +1,7 @@
 import { blockDimensions, BLOCKS_ARRAY } from "./blocks";
 import { CONFIG, configObservable } from "./config";
 import { CANVAS_DIMENSIONS, Coords } from "./drawer";
-import { FIRST_PERSON_CANVAS_DIMENSIONS } from "./first-person-drawer";
+import { FIRST_PERSON_CANVAS_DIMENSIONS } from "./first-person-rasterizer-and-drawer/drawer";
 import { player } from "./player";
 import { subVec } from "./vectorOperations";
 

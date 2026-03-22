@@ -4,7 +4,7 @@ import { addDebuggerMessage, debuggerMessages, drawLegend } from './helpers/debu
 import { computeRays } from './helpers/ray-caster';
 import { updateOrientation, updatePosition } from './helpers/movement';
 import { drawBlocks, drawPlayer, drawRays, emptyCanvas } from './helpers/drawer';
-import { drawRaysAsWallsAndFloors } from './helpers/first-person-drawer';
+import { drawRaysAsWallsAndFloors } from './helpers/first-person-rasterizer-and-drawer';
 
 //draw interval in frames per second
 export const FPS = 50

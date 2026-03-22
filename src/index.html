@@ -11,7 +11,7 @@
     </head>
     <body>
         <h1 class="header">
-            Ray caster project
+            Totally vanilla ray caster project
         </h1>
         <div style="margin-top: 50px; display: flex; align-items: center; justify-content: space-around; width: 100%; position: relative;">
             <canvas id="rayCaster" style="border:1px solid black;"></canvas>
@@ -19,7 +19,7 @@
         </div>
         <div  style="margin-top: 50px; display: flex; align-items: center; justify-content: space-around; width: 100%; position: relative;">
             <div id="rayCasterDebugger" style="background-color: blanchedalmond; height: 300px; width: 300px; font-size: 14px;"></div>
-            <div id="config" style="background-color:chocolate; height: 300px; width: 500px; padding: 20px; user-select: none;">
+            <div id="config" style="background-color:chocolate; height: 400px; width: 500px; padding: 20px; user-select: none;">
                 <label>
                     <input id="fishEyeCorrection" type="checkbox" checked/>
                     Fisheye correction
@@ -52,6 +52,19 @@
                     <input id="drawFloors" type="checkbox" checked/>
                     Draw Floors (notice frame render time improvement)
                 </label>
+                <hr>
+                
+                <div>
+                    <label>
+                        <input class="firstPersonDrawMethod" name="firstPersonDrawMethod" value="rects" checked type="radio">
+                        First person canvas draw method using rects
+                    </label>
+                    <br>
+                    <label>
+                        <input class="firstPersonDrawMethod" name="firstPersonDrawMethod" value="ImageData" type="radio">
+                        First person canvas draw method using ImageData( about 1ms slower and looks worse because it's lacking antialiasing)
+                    </label>
+                </div>
             </div>
         </div>
 
