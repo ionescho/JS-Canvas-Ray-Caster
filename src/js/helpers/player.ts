@@ -7,6 +7,7 @@ type Player = {
     orientation: {
         angle: number;
         speed: number;
+        unitVector: Coords;
     };
     movement: {
         speedVector: Coords
@@ -25,6 +26,10 @@ export const player: Player = {
     orientation: {
         angle: 0, //orientation angle in radians
         speed: 2, // the speed with which the player changes it's orientation angle( when pressing left or right )
+        unitVector: {
+            x: 0,
+            y: 1
+        }
     },
     movement: {
         speedVector: {// translates the movement direction angle and speed into a speed vector used to calculate position changes for the x and y components

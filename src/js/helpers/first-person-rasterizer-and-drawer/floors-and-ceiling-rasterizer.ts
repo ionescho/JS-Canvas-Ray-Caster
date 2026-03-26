@@ -45,7 +45,7 @@ export const floorsAndCeilingsRasterizer = (ray: Ray, rayIndex: number, rayStrip
             const pointOnTheFloorToDraw = addVec(player.coords, scalarMulVec(rayAngleUnitVector, distance));
 
             // below line just for testing purposes, just drawing a checkered floor with alternating white and black tiles to check if the perspective is correct, next step, implement textures
-            const floorShouldDraw = Math.abs((Math.floor(pointOnTheFloorToDraw.x/ blockDimensions.x) + Math.floor(pointOnTheFloorToDraw.y/ blockDimensions.y)) % 2 ) === 0;
+            const floorShouldDraw = Math.abs((Math.floor(pointOnTheFloorToDraw.x/ blockDimensions.x) + Math.floor(pointOnTheFloorToDraw.y/ blockDimensions.y)) % 2 ) === 1;
 
             if(floorShouldDraw) {
                 if(currentPixelStripToDrawStart === null) {

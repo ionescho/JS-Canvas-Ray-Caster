@@ -3,6 +3,7 @@ import { Coords } from "../drawer";
 import { Ray, rays } from "../ray-caster";
 import { FIRST_PERSON_CANVAS_DIMENSIONS, firstPersonDrawer } from "./drawer";
 import { floorsAndCeilingsRasterizer } from "./floors-and-ceiling-rasterizer";
+import { spritesRasterizer } from "./sprites-rasterizer";
 import { wallRasterizer } from "./wall-rasterizer";
 
 export type PixelMapType = {
@@ -36,6 +37,8 @@ export const drawRaysAsWallsAndFloors = () => {
             floorsAndCeilingsRasterizer(ray, rayIndex, rayStripWidth, verticalPixelsLeftForFloor, FIRST_PERSON_CANVAS_PIXEL_MAP)
         }
     })
+
+    spritesRasterizer();
 
     firstPersonDrawer(FIRST_PERSON_CANVAS_PIXEL_MAP)
 }

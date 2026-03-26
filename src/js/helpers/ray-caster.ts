@@ -3,7 +3,7 @@ import { CONFIG, configObservable } from "./config";
 import { CANVAS_DIMENSIONS, Coords } from "./drawer";
 import { FIRST_PERSON_CANVAS_DIMENSIONS } from "./first-person-rasterizer-and-drawer/drawer";
 import { player } from "./player";
-import { subVec } from "./vectorOperations";
+import { subVec, vectorMagnitude } from "./vectorOperations";
 
 export type Ray = {
     end: Coords;
@@ -100,12 +100,12 @@ export const computeRays = () => {
         let blockHitRelativePos: null | number;
         if (coordsSumHorizontal < coordsSumVertical) {
             finalIntersection = intersectionHorizontal;
-            magnitude = Math.sqrt( distVecHorizontal.x ** 2 + distVecHorizontal.y ** 2 );// should employ a better way to compute magnitude(using sin and cos of angle and x and y components since it is less costly than sqrt ... I think)
+            magnitude = vectorMagnitude(distVecHorizontal);
             horizontalCollision = true;
             blockHitRelativePos = blockHitHorizontal;
         } else {
             finalIntersection = intersectionVertical;
-            magnitude = Math.sqrt( distVecVertical.x ** 2 + distVecVertical.y ** 2 );// should employ a better way to compute magnitude(using sin and cos of angle and x and y components since it is less costly than sqrt ... I think)
+            magnitude = vectorMagnitude(distVecVertical);
             blockHitRelativePos = blockHitVertical;
         }
 

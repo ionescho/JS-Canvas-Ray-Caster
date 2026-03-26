@@ -15,6 +15,11 @@ export const updateOrientation = () => {
         if((player.orientation.angle > 2 * Math.PI) || (player.orientation.angle < 0)) {
             player.orientation.angle = (player.orientation.angle + 2 * Math.PI) % (2 * Math.PI);
         }
+
+        player.orientation.unitVector = {
+            x:Math.sin(player.orientation.angle),
+            y: Math.cos(player.orientation.angle)
+        }
     }
 }
 

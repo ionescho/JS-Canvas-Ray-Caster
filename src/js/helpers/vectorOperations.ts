@@ -18,3 +18,19 @@ export const scalarMulVec = (a: Coords, scalar: number): Coords => {
         y: a.y * scalar,
     }
 }
+export const perpendicularVector = (v: Coords): Coords => {
+    return {
+        x: -v.y,
+        y: v.x
+    };
+}
+export const vectorMagnitude = (v: Coords): number => {
+    return Math.sqrt(v.x * v.x + v.y * v.y);
+}
+export const unitVector = (v: Coords): Coords => {
+    const magnitude = vectorMagnitude(v);
+    return {
+        x: v.x / magnitude,
+        y: v.y / magnitude,
+    }
+}

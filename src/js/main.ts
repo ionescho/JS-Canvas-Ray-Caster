@@ -3,7 +3,7 @@ import { resolvePotentialCollisions } from './helpers/collision-resolvers';
 import { addDebuggerMessage, debuggerMessages, drawLegend } from './helpers/debugger';
 import { computeRays } from './helpers/ray-caster';
 import { updateOrientation, updatePosition } from './helpers/movement';
-import { drawBlocks, drawPlayer, drawRays, emptyCanvas } from './helpers/drawer';
+import { drawBlocks, drawPlayer, drawRays, drawSprites, emptyCanvas } from './helpers/drawer';
 import { drawRaysAsWallsAndFloors } from './helpers/first-person-rasterizer-and-drawer';
 
 //draw interval in frames per second
@@ -34,6 +34,8 @@ setInterval(() => {
     drawRays();
 
     drawPlayer();
+
+    drawSprites();
 
     drawRaysAsWallsAndFloors();
 
