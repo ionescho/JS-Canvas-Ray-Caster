@@ -11,7 +11,7 @@ let verticalPixelDistanceAlongRayFloorCorrespondent: number[][];// long name I k
 const initVirtualProjectionPlanePixelRayDistanceMappingForFloors = () => {
 
     const verticalPixels = FIRST_PERSON_CANVAS_DIMENSIONS.y
-    const halfFieldOfViewLength = Math.tan(CONFIG.HALF_FIELD_OF_VIEW)
+    const halfFieldOfViewLength = CONFIG.HALF_FIELD_OF_VIEW_LENGTH
     const playerHeight = blockDimensions.z / 2
     verticalPixelDistanceAlongRayFloorCorrespondent = Array.from({ length: rays.length }, (v, i) => {
         const distanceFromObserverToVirtualPlaneVerticalPixelStrip = 1 / Math.cos((rays[i].angleFromOrientation));

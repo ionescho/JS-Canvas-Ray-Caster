@@ -17,7 +17,7 @@ export const updateOrientation = () => {
         }
 
         player.orientation.unitVector = {
-            x:Math.sin(player.orientation.angle),
+            x: Math.sin(player.orientation.angle),
             y: Math.cos(player.orientation.angle)
         }
     }

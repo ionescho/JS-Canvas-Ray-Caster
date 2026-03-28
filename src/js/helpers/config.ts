@@ -1,6 +1,8 @@
 
 export const CONFIG = {
-    HALF_FIELD_OF_VIEW: Math.PI/6, // field of view is the same on horizontal and on vertical so far
+    HALF_FIELD_OF_VIEW_ANGLE: Math.PI/6, // field of view is the same on horizontal and on vertical so far
+    HALF_FIELD_OF_VIEW_LENGTH: Math.tan(Math.PI/6), // The length of half of the virtual screen plane that is 1 unit in front of the player
+
     applyFishEyeCorrection: true,
     rayCastingType: 'plane',
     applyTextures: true,
@@ -38,7 +40,8 @@ document.querySelectorAll(".projectionType").forEach((element) => {
 
 document.getElementById("fieldOfView")?.addEventListener('input', (event) => {
     const FOV =  Math.round(Number((event.target as HTMLInputElement)?.value) * 100) / 100;
-    CONFIG.HALF_FIELD_OF_VIEW = FOV/2;
+    CONFIG.HALF_FIELD_OF_VIEW_ANGLE = FOV/2;
+    CONFIG.HALF_FIELD_OF_VIEW_LENGTH = Math.tan(CONFIG.HALF_FIELD_OF_VIEW_ANGLE);
 
     (document.getElementById("fieldOfViewValue") as HTMLSpanElement).innerHTML = `${Math.round(100 * 180 * FOV / Math.PI)/ 100}`
 

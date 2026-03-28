@@ -80,8 +80,7 @@ export const drawRays = () => {
 
 export const drawSprites = () => {
     SPRITES.forEach(({ pos, width }) => {
-        const playerToSpriteVector = subVec(pos, player.coords);
-        const spritePlaneUnitVector = unitVector(perpendicularVector(playerToSpriteVector));
+        const spritePlaneUnitVector = perpendicularVector(player.orientation.unitVector);
         const spriteHalfVector = scalarMulVec(spritePlaneUnitVector, width / 2);
 
         const spriteLineStart = addVec(pos, spriteHalfVector);

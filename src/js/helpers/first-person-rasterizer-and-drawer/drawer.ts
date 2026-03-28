@@ -24,6 +24,7 @@ export const firstPersonDrawer = (pixelMap: PixelMapType) => {
             for (var i = 0; i < pixelMap.length; i++) {
                 const {startPixelPos, rectLength, r, g, b, a} = pixelMap[i]
                 ctx.rect(startPixelPos.x, startPixelPos.y, rectLength.x, rectLength.y);
+                // ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
             }
             ctx.fillStyle = `rgba(0, 0, 0, 1)`;
             ctx.fill();

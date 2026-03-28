@@ -19,7 +19,7 @@ const FIRST_PERSON_CANVAS_PIXEL_MAP: PixelMapType = []
 
 let VIRTUAL_PROJECTION_PLANE_HEIGHT
 const initProjectionPlaneHeight = () => {
-    VIRTUAL_PROJECTION_PLANE_HEIGHT = 2 * Math.tan(CONFIG.HALF_FIELD_OF_VIEW);}
+    VIRTUAL_PROJECTION_PLANE_HEIGHT = 2 * CONFIG.HALF_FIELD_OF_VIEW_LENGTH;}
 setTimeout(() => {
     initProjectionPlaneHeight()
 })
@@ -38,7 +38,7 @@ export const drawRaysAsWallsAndFloors = () => {
         }
     })
 
-    spritesRasterizer();
+    spritesRasterizer(FIRST_PERSON_CANVAS_PIXEL_MAP);
 
     firstPersonDrawer(FIRST_PERSON_CANVAS_PIXEL_MAP)
 }

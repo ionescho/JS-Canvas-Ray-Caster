@@ -24,18 +24,18 @@ const initRayArrays = () => {
     const FIELD_OF_VIEW_RAY_INTERVAL = 0.001;
 
     //circular projection
-    circularProjectionRays = Array.from({ length: Math.floor(CONFIG.HALF_FIELD_OF_VIEW * 2 / FIELD_OF_VIEW_RAY_INTERVAL) }, (v, i) => ({ 
+    circularProjectionRays = Array.from({ length: Math.floor(CONFIG.HALF_FIELD_OF_VIEW_ANGLE * 2 / FIELD_OF_VIEW_RAY_INTERVAL) }, (v, i) => ({ 
         angle: 0,
-        angleFromOrientation: CONFIG.HALF_FIELD_OF_VIEW - ( FIELD_OF_VIEW_RAY_INTERVAL * i ),
+        angleFromOrientation: CONFIG.HALF_FIELD_OF_VIEW_ANGLE - ( FIELD_OF_VIEW_RAY_INTERVAL * i ),
         previousRayAngleDelta: FIELD_OF_VIEW_RAY_INTERVAL,
         magnitude: 0,
         end: {x: 0, y: 0}
     }));
     
     //projection plane
-    let prevAngle = CONFIG.HALF_FIELD_OF_VIEW;
+    let prevAngle = CONFIG.HALF_FIELD_OF_VIEW_ANGLE;
     const pixels = FIRST_PERSON_CANVAS_DIMENSIONS.x
-    const halfFieldOfViewLength = Math.tan(CONFIG.HALF_FIELD_OF_VIEW)
+    const halfFieldOfViewLength = CONFIG.HALF_FIELD_OF_VIEW_LENGTH
     projectionPlaneRays = Array.from({ length: pixels }, (v, i) => {
         const currAngle = Math.atan(halfFieldOfViewLength * ( 1 - 2 * i / pixels ));// angle between player orientation and currently iterated ray
         const angleDiff = prevAngle - currAngle;
@@ -72,7 +72,7 @@ export const computeRays = () => {
 
     }
 
-    let fieldOfViewAngleStart = player.orientation.angle + CONFIG.HALF_FIELD_OF_VIEW; // field of view start
+    let fieldOfViewAngleStart = player.orientation.angle + CONFIG.HALF_FIELD_OF_VIEW_ANGLE; // field of view start
     if(fieldOfViewAngleStart > Math.PI * 2) {
         fieldOfViewAngleStart -= Math.PI * 2
     }
@@ -169,7 +169,7 @@ const castRayUntilCollision = (startingPoint: Coords, orientationAngle: number, 
     if(blockHit) {
         blockHitRelativePos = (intersection[crossAxis] % blockDimensions[crossAxis]) / blockDimensions[crossAxis]
         if(isGoingAlongMainAxis  ===  (collisionType ==='horizontal')) { 
-            // XNOR basically - we need to flip the texture if seeing a horizontal face looking down along the vertical axis or if we see a vertical face against the horizontal axis,
+            // XNOR basically - we need to flip the texture if seeing a horizontal face looking down against the vertical axis or if we see a vertical face against the horizontal axis,
             // this is because in those situations, the cross axis is increasing from right to left while we have the texture bitmap indexes defined from left to right.. hence the need to flip
             blockHitRelativePos = 1 - blockHitRelativePos;
         }
