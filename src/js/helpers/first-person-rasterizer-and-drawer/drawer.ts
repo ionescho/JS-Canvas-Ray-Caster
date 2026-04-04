@@ -22,8 +22,8 @@ export const firstPersonDrawer = (floorsCeilingsPixelMap: PixelMapType, wallsSpr
         applyRectsFromPixelMapToCanvas(ctx, floorsCeilingsPixelMap);
         applyRectsFromPixelMapToCanvas(ctx, orderedWallsSpritesPixelMap);
 
-        ctx.fillStyle = `rgba(${0}, ${0}, ${0}, ${1})`;
-        ctx.fill();
+        // ctx.fillStyle = `rgba(${0}, ${0}, ${0}, ${1})`;
+        // ctx.fill();
 
         } else {
             const imageData = new ImageData(FIRST_PERSON_CANVAS_DIMENSIONS.x, FIRST_PERSON_CANVAS_DIMENSIONS.y);
@@ -35,10 +35,10 @@ export const firstPersonDrawer = (floorsCeilingsPixelMap: PixelMapType, wallsSpr
 
 const applyRectsFromPixelMapToCanvas = (ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D, pixelMap: PixelMapType) => {
     for (var i = 0; i < pixelMap.length; i++) {
-        const {startPixelPos, rectLength, r, g, b, a} = pixelMap[i]
-        if(g !== 255) {
-            ctx.rect(startPixelPos.x, startPixelPos.y, rectLength.x, rectLength.y);
-        }
+        const {startPixelPos, rectLength, r, g, b, a} = pixelMap[i];
+
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
+        ctx.fillRect(startPixelPos.x, startPixelPos.y, rectLength.x, rectLength.y);
     }
 }
 
