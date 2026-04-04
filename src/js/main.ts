@@ -9,8 +9,6 @@ import { drawRaysAsWallsAndFloors } from './helpers/first-person-rasterizer-and-
 //draw interval in frames per second
 export const FPS = 50
 
-const bla = () =>  resolvePotentialCollisions({x:0, y:0})// daca sterg asta, crapa, wtf, probabil ceva cu ordinea importurilor
-
 let timeBeforeNewInterval = Date.now();
 
 
@@ -44,3 +42,29 @@ setInterval(() => {
 
 
 }, 1000/FPS);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const bla = () =>  resolvePotentialCollisions({x:0, y:0})// daca sterg asta, crapa, wtf, probabil ceva cu ordinea importurilor, care e faza?

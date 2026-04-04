@@ -33,33 +33,42 @@ export const wallRasterizer = (ray: Ray, rayIndex: number, rayStripWidth: number
                 let coloredSubStripLength = 0;
                 let texturedStripIndex = 0;
                 while(texturedStripIndex <= correspondingTextureStrip.length + 1) {
-                    if(correspondingTextureStrip[texturedStripIndex] === 1) {
+                    
+                    if(texturedStripIndex === 0 || correspondingTextureStrip[texturedStripIndex] === correspondingTextureStrip[texturedStripIndex-1]) {
                         coloredSubStripLength++;
                     } else {
-                        if(correspondingTextureStrip[texturedStripIndex-1] && !correspondingTextureStrip[texturedStripIndex]){
-                            const subStripHeight = rayStripHeight * coloredSubStripLength / correspondingTextureStrip.length;
-                            const subStripStart = rayStripHeight * coloredSubStripStart / correspondingTextureStrip.length;
-
-                            // adding pixel info to the pixel map so it can be drawn later
-                            pixelMap.push({
-                                startPixelPos: {
-                                    x: rayIndex * rayStripWidth,
-                                    y: wallStartY + subStripStart
-                                },
-                                rectLength: {
-                                    x: rayStripWidth,
-                                    y: subStripHeight
-                                },
-                                r: 0,
-                                g: 0,
-                                b: 0,
-                                a: 1
-                            })
-
-                                                        
+                        const color = correspondingTextureStrip[texturedStripIndex-1];
+                        let r,g,b,a: number;
+                        if(color) {
+                            r = g = b = 0;
+                        } else {
+                            r = g = b = 255;
                         }
-                        coloredSubStripStart = texturedStripIndex + 1;
-                        coloredSubStripLength = 0;
+                        a = 1;
+
+                        const subStripHeight = rayStripHeight * coloredSubStripLength / correspondingTextureStrip.length;
+                        const subStripStart = rayStripHeight * coloredSubStripStart / correspondingTextureStrip.length;
+
+                        // adding pixel info to the pixel map so it can be drawn later
+                        pixelMap.push({
+                            startPixelPos: {
+                                x: rayIndex * rayStripWidth,
+                                y: wallStartY + subStripStart
+                            },
+                            rectLength: {
+                                x: rayStripWidth,
+                                y: subStripHeight
+                            },
+                            r,
+                            g,
+                            b,
+                            a,
+                            distance: ray.magnitude
+                        })
+
+
+                        coloredSubStripStart = texturedStripIndex;
+                        coloredSubStripLength = 1;
                     }
                     texturedStripIndex++
                 }
@@ -77,7 +86,8 @@ export const wallRasterizer = (ray: Ray, rayIndex: number, rayStripWidth: number
                     r: 0,
                     g: 0,
                     b: 255,
-                    a: ray.horizontalCollision ? 1 : 0.7
+                    a: ray.horizontalCollision ? 1 : 0.7,
+                    distance: ray.magnitude
                 })
             }
             //draw walls end
