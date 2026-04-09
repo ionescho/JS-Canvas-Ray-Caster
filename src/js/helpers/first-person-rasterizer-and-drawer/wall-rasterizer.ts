@@ -24,10 +24,11 @@ export const wallRasterizer = (ray: Ray, rayIndex: number, rayStripWidth: number
             
             const rayStripHeight = projectedWallRatio * FIRST_PERSON_CANVAS_DIMENSIONS.y; // regula de 3 simpla
             const wallStartY = FIRST_PERSON_CANVAS_DIMENSIONS.y/2 - rayStripHeight/2;
-    
+
             if(CONFIG.applyTextures) {
-                const wallVerticalTextureFragmentStripIndex = Math.floor(ray.blockHitRelativePos * wallTextures[0].length);
-                const correspondingTextureStrip = wallTextures.map((textureRow) => textureRow[wallVerticalTextureFragmentStripIndex]);
+                const correspondingTexture = wallTextures[ray.blockTexture as number - 1];
+                const wallVerticalTextureFragmentStripIndex = Math.floor(ray.blockHitRelativePos * correspondingTexture[0].length);
+                const correspondingTextureStrip = correspondingTexture.map((textureRow) => textureRow[wallVerticalTextureFragmentStripIndex]);
 
                 let coloredSubStripStart = 0;
                 let coloredSubStripLength = 0;
@@ -37,9 +38,9 @@ export const wallRasterizer = (ray: Ray, rayIndex: number, rayStripWidth: number
                     if(texturedStripIndex === 0 || correspondingTextureStrip[texturedStripIndex] === correspondingTextureStrip[texturedStripIndex-1]) {
                         coloredSubStripLength++;
                     } else {
-                        const color = correspondingTextureStrip[texturedStripIndex-1];
+                        const isBlack = correspondingTextureStrip[texturedStripIndex-1];
                         let r,g,b,a: number;
-                        if(color) {
+                        if(isBlack) {
                             r = g = b = 0;
                         } else {
                             r = g = b = 255;

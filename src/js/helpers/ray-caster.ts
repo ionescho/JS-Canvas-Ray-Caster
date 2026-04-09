@@ -13,6 +13,7 @@ export type Ray = {
     angle: number;
     horizontalCollision?: boolean;// true if horizontal collision, false if vertical
     blockHitRelativePos?: null | number;// null if ray hasn't hit a block( so it went off the edge of the screen) or a ratio representing where it hit the block( useful for texture mapping later )
+    blockTexture?: number;
 }
 
 export let rays: Ray[];
@@ -21,9 +22,10 @@ let circularProjectionRays: Ray[];
 let projectionPlaneRays: Ray[];
 
 const initRayArrays = () => {
-    const FIELD_OF_VIEW_RAY_INTERVAL = 0.001;
-
+    const numberOfRays = CONFIG.rayNr;
+    
     //circular projection
+    const FIELD_OF_VIEW_RAY_INTERVAL = CONFIG.HALF_FIELD_OF_VIEW_ANGLE * 2 / numberOfRays;
     circularProjectionRays = Array.from({ length: Math.floor(CONFIG.HALF_FIELD_OF_VIEW_ANGLE * 2 / FIELD_OF_VIEW_RAY_INTERVAL) }, (v, i) => ({ 
         angle: 0,
         angleFromOrientation: CONFIG.HALF_FIELD_OF_VIEW_ANGLE - ( FIELD_OF_VIEW_RAY_INTERVAL * i ),
@@ -34,7 +36,7 @@ const initRayArrays = () => {
     
     //projection plane
     let prevAngle = CONFIG.HALF_FIELD_OF_VIEW_ANGLE;
-    const pixels = FIRST_PERSON_CANVAS_DIMENSIONS.x
+    const pixels = numberOfRays;
     const halfFieldOfViewLength = CONFIG.HALF_FIELD_OF_VIEW_LENGTH
     projectionPlaneRays = Array.from({ length: pixels }, (v, i) => {
         const currAngle = Math.atan(halfFieldOfViewLength * ( 1 - 2 * i / pixels ));// angle between player orientation and currently iterated ray
@@ -48,7 +50,6 @@ const initRayArrays = () => {
             previousRayAngleDelta: angleDiff,
             end: {x: 0, y: 0},
             magnitude: 0,
-            hitBlock: false,
         }
     })
 
@@ -85,8 +86,8 @@ export const computeRays = () => {
             }
         }
 
-        const {intersection: intersectionHorizontal, blockHitRelativePos: blockHitHorizontal} = castRayUntilCollision(player.coords, ray.angle, 'horizontal');
-        const {intersection: intersectionVertical, blockHitRelativePos: blockHitVertical} = castRayUntilCollision(player.coords, ray.angle, 'vertical');
+        const {intersection: intersectionHorizontal, blockHitRelativePos: blockHitHorizontal, blockTexture: horizontalBlockHitTexture} = castRayUntilCollision(player.coords, ray.angle, 'horizontal');
+        const {intersection: intersectionVertical, blockHitRelativePos: blockHitVertical, blockTexture: verticalBlockHitTexture} = castRayUntilCollision(player.coords, ray.angle, 'vertical');
 
         const distVecHorizontal = subVec(intersectionHorizontal, player.coords);
         const distVecVertical = subVec(intersectionVertical, player.coords);
@@ -98,15 +99,18 @@ export const computeRays = () => {
         let magnitude: number;
         let horizontalCollision = false;
         let blockHitRelativePos: null | number;
+        let blockTexture: number;
         if (coordsSumHorizontal < coordsSumVertical) {
             finalIntersection = intersectionHorizontal;
             magnitude = vectorMagnitude(distVecHorizontal);
             horizontalCollision = true;
             blockHitRelativePos = blockHitHorizontal;
+            blockTexture = horizontalBlockHitTexture;
         } else {
             finalIntersection = intersectionVertical;
             magnitude = vectorMagnitude(distVecVertical);
             blockHitRelativePos = blockHitVertical;
+            blockTexture = verticalBlockHitTexture;
         }
 
 
@@ -118,6 +122,7 @@ export const computeRays = () => {
         ray.magnitude = magnitude;
         ray.horizontalCollision = horizontalCollision;
         ray.blockHitRelativePos = blockHitRelativePos;
+        ray.blockTexture = blockTexture;
     });
     // message += `${roundDec2(fieldOfViewAngle)},`;
     // addDebuggerMessage(message)
@@ -179,5 +184,6 @@ const castRayUntilCollision = (startingPoint: Coords, orientationAngle: number, 
     return {
         intersection,
         blockHitRelativePos,
+        blockTexture: blockHit
     };
 }

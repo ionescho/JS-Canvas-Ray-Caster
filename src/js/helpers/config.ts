@@ -5,6 +5,7 @@ export const CONFIG = {
 
     applyFishEyeCorrection: true,
     rayCastingType: 'plane',
+    rayNr: 500,
     applyTextures: true,
     drawFloors: true,
     firstPersonDrawMethod: 'rects',
@@ -37,6 +38,16 @@ document.querySelectorAll(".projectionType").forEach((element) => {
         configObservable.callListeners();
     })
 });
+
+document.getElementById("nrOfRays")?.addEventListener('input', (event) => {
+    const rayNr =  Number((event.target as HTMLInputElement)?.value);
+
+    CONFIG.rayNr = rayNr;
+
+    (document.getElementById("nrOfRaysValue") as HTMLSpanElement).innerHTML = rayNr.toString();
+
+    configObservable.callListeners();
+})
 
 document.getElementById("fieldOfView")?.addEventListener('input', (event) => {
     const FOV =  Math.round(Number((event.target as HTMLInputElement)?.value) * 100) / 100;

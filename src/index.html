@@ -19,24 +19,31 @@
         </div>
         <div  style="margin-top: 50px; display: flex; align-items: center; justify-content: space-around; width: 100%; position: relative;">
             <div id="rayCasterDebugger" style="background-color: blanchedalmond; height: 300px; width: 500px; font-size: 14px;"></div>
-            <div id="config" style="background-color:chocolate; height: 400px; width: 500px; padding: 20px; user-select: none;">
+            <div id="config" style="background-color:chocolate; height: fit-content; width: 500px; padding: 20px; user-select: none;">
                 <label>
                     <input id="fishEyeCorrection" type="checkbox" checked/>
                     Fisheye correction
                 </label>
-                <hr>
+                <hr />
                 <div>
                     <label>
                         <input class="projectionType" name="projectionType" value="circular" type="radio">
                         Circular Projection (constant angle between rays - bad)
                     </label>
-                    <br>
+                    <br />
                     <label>
                         <input class="projectionType" name="projectionType" value="plane" checked type="radio">
                         Projection Plane (ray angle varies - good)
                     </label>
                 </div>
-                <hr>
+                <hr />
+                <label>
+                    Nr of rays (<span id="nrOfRaysValue">500</span>):
+                    <br />
+                    10 <input id="nrOfRays" value="500" type="range" min="10" max="500" step="1"/> 500
+                    <br />
+                </label>
+                <hr />
                 <label>
                     <input id="fieldOfView" type="range" min="0.3" max="3.1" step="0.01"/>
                     Field of view

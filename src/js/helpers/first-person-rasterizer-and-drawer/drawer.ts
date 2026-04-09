@@ -21,16 +21,12 @@ export const firstPersonDrawer = (floorsCeilingsPixelMap: PixelMapType, wallsSpr
     if(CONFIG.firstPersonDrawMethod === 'rects') {
         applyRectsFromPixelMapToCanvas(ctx, floorsCeilingsPixelMap);
         applyRectsFromPixelMapToCanvas(ctx, orderedWallsSpritesPixelMap);
-
-        // ctx.fillStyle = `rgba(${0}, ${0}, ${0}, ${1})`;
-        // ctx.fill();
-
-        } else {
-            const imageData = new ImageData(FIRST_PERSON_CANVAS_DIMENSIONS.x, FIRST_PERSON_CANVAS_DIMENSIONS.y);
-            buildImageDataFromPixelMap(imageData, floorsCeilingsPixelMap);
-            buildImageDataFromPixelMap(imageData, orderedWallsSpritesPixelMap);
-            ctx.putImageData(imageData, 0, 0)
-        }
+    } else {
+        const imageData = new ImageData(FIRST_PERSON_CANVAS_DIMENSIONS.x, FIRST_PERSON_CANVAS_DIMENSIONS.y);
+        buildImageDataFromPixelMap(imageData, floorsCeilingsPixelMap);
+        buildImageDataFromPixelMap(imageData, orderedWallsSpritesPixelMap);
+        ctx.putImageData(imageData, 0, 0);
+    }
 }
 
 const applyRectsFromPixelMapToCanvas = (ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D, pixelMap: PixelMapType) => {
