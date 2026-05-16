@@ -260,6 +260,5 @@ const normalizeSpriteAndPlayerOrientationAngles = (spriteStartAngle: number, spr
 
 
         const isInView = angleBetweenPlayerToSpriteLineAndPlayerOrientation <= CONFIG.HALF_FIELD_OF_VIEW_ANGLE &&  angleBetweenPlayerToSpriteLineAndPlayerOrientation >= -CONFIG.HALF_FIELD_OF_VIEW_ANGLE;
-
         addDebuggerMessage(`Is in FOV: ${isInView ? 'YES' : 'NO'}`)
  */

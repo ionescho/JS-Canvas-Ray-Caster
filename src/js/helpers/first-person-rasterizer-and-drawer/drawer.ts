@@ -22,7 +22,7 @@ export const firstPersonDrawer = (floorsCeilingsPixelMap: PixelMapType, wallsSpr
         applyRectsFromPixelMapToCanvas(ctx, floorsCeilingsPixelMap);
         applyRectsFromPixelMapToCanvas(ctx, orderedWallsSpritesPixelMap);
     } else {
-        const imageData = new ImageData(FIRST_PERSON_CANVAS_DIMENSIONS.x, FIRST_PERSON_CANVAS_DIMENSIONS.y);
+        const imageData = ctx.createImageData(FIRST_PERSON_CANVAS_DIMENSIONS.x, FIRST_PERSON_CANVAS_DIMENSIONS.y);
         buildImageDataFromPixelMap(imageData, floorsCeilingsPixelMap);
         buildImageDataFromPixelMap(imageData, orderedWallsSpritesPixelMap);
         ctx.putImageData(imageData, 0, 0);
@@ -31,33 +31,43 @@ export const firstPersonDrawer = (floorsCeilingsPixelMap: PixelMapType, wallsSpr
 
 const applyRectsFromPixelMapToCanvas = (ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D, pixelMap: PixelMapType) => {
     for (var i = 0; i < pixelMap.length; i++) {
-        const {startPixelPos, rectLength, r, g, b, a} = pixelMap[i];
+        const {startPixelPos, rectLength, r, g, b, a, bitmap} = pixelMap[i];
 
-        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
-        ctx.fillRect(startPixelPos.x, startPixelPos.y, rectLength.x, rectLength.y);
+
+        if(r !== undefined && g !== undefined && b !== undefined && a !== undefined) {
+            ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
+            ctx.fillRect(startPixelPos.x, startPixelPos.y, rectLength.x, rectLength.y);
+        } else if(bitmap !== undefined) {
+            ctx.drawImage(bitmap, startPixelPos.x, startPixelPos.y, rectLength.x, rectLength.y);
+        }
     }
 }
 
 const buildImageDataFromPixelMap = (imageData: ImageData, pixelMap: PixelMapType) => {
     for (var i = 0; i < pixelMap.length; i++) {
-        const {startPixelPos, rectLength, r, g, b, a} = pixelMap[i]
+        const {startPixelPos, rectLength, r, g, b, a, bitmap} = pixelMap[i]
+
+        if(r !== undefined && g !== undefined && b !== undefined && a !== undefined) {
+            const startPixelXRounded = Math.round(startPixelPos.x);
+            const startPixelYRounded = Math.round(startPixelPos.y);
+            const endPixelXRounded = startPixelXRounded + Math.round(rectLength.x);
+            const endPixelYRounded = startPixelYRounded + Math.round(rectLength.y);
     
-        const startPixelXRounded = Math.round(startPixelPos.x);
-        const startPixelYRounded = Math.round(startPixelPos.y);
-        const endPixelXRounded = startPixelXRounded + Math.round(rectLength.x);
-        const endPixelYRounded = startPixelYRounded + Math.round(rectLength.y);
-
-        let imageDataIndex
-        for(var y = startPixelYRounded; y < endPixelYRounded; y++) {
-            imageDataIndex = (y * FIRST_PERSON_CANVAS_DIMENSIONS.x + startPixelXRounded) * 4
-            for(var x = startPixelXRounded; x < endPixelXRounded; x++) {
-                imageData.data[imageDataIndex + 0] = r; // R value
-                imageData.data[imageDataIndex + 1] = g; // G value
-                imageData.data[imageDataIndex + 2] = b; // B value
-                imageData.data[imageDataIndex + 3] = a * 255; // A value
-
-                imageDataIndex += 4
+            let imageDataIndex
+            for(var y = startPixelYRounded; y < endPixelYRounded; y++) {
+                imageDataIndex = (y * FIRST_PERSON_CANVAS_DIMENSIONS.x + startPixelXRounded) * 4
+                for(var x = startPixelXRounded; x < endPixelXRounded; x++) {
+                    imageData.data[imageDataIndex + 0] = r; // R value
+                    imageData.data[imageDataIndex + 1] = g; // G value
+                    imageData.data[imageDataIndex + 2] = b; // B value
+                    imageData.data[imageDataIndex + 3] = a * 255; // A value
+    
+                    imageDataIndex += 4
+                }
             }
+        } else if(bitmap !== undefined) {
+            ctx.drawImage(bitmap, startPixelPos.x, startPixelPos.y, rectLength.x, rectLength.y);
         }
+    
     }
 }

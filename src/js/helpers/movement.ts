@@ -1,12 +1,12 @@
-import { FPS } from "../main";
 import { resolvePotentialCollisions } from "./collision-resolvers";
+import { CONFIG } from "./config";
 import { movementKeysPressed } from "./eventListeners";
 import { player } from "./player";
 import { addVec, scalarMulVec } from "./vectorOperations";
 
 export const updateOrientation = () => {
     if(movementKeysPressed.left || movementKeysPressed.right) {
-        const playerOrientationDelta = player.orientation.speed/FPS
+        const playerOrientationDelta = player.orientation.speed/CONFIG.FPS
         
         //update orientation
         player.orientation.angle = player.orientation.angle + playerOrientationDelta * (movementKeysPressed.left ? 1 : -1);
@@ -39,7 +39,7 @@ export const updatePosition = () => {
         player.movement.speedVector.x = Math.sin(movementDirection) * player.speed;
         player.movement.speedVector.y = Math.cos(movementDirection) * player.speed;
 
-        const potentialFuturePlayerPos = addVec(player.coords, scalarMulVec(player.movement.speedVector, 1/FPS))
+        const potentialFuturePlayerPos = addVec(player.coords, scalarMulVec(player.movement.speedVector, 1/CONFIG.FPS))
         
         player.coords = resolvePotentialCollisions(potentialFuturePlayerPos);
     }

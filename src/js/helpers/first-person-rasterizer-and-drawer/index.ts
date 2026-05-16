@@ -9,10 +9,11 @@ import { wallRasterizer } from "./wall-rasterizer";
 export type PixelMapType = {
     startPixelPos: Coords;
     rectLength: Coords;
-    r: number;
-    g: number;
-    b: number;
-    a: number;
+    r?: number;
+    g?: number;
+    b?: number;
+    a?: number;
+    bitmap?: ImageBitmap;
     distance?: number;
 }[]
 

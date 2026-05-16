@@ -5,43 +5,49 @@ import { computeRays } from './helpers/ray-caster';
 import { updateOrientation, updatePosition } from './helpers/movement';
 import { drawBlocks, drawPlayer, drawRays, drawSprites, emptyCanvas } from './helpers/drawer';
 import { drawRaysAsWallsAndFloors } from './helpers/first-person-rasterizer-and-drawer';
-
-//draw interval in frames per second
-export const FPS = 50
-
-let timeBeforeNewInterval = Date.now();
+import { parseWallTextureConfig } from './helpers/blocks';
+import { CONFIG } from './helpers/config';
 
 
+const start = () => {
+    let timeBeforeNewInterval = Date.now();
+    
+    setInterval(() => {
+        debuggerMessages.length = 0;
+        const now = Date.now();
+        addDebuggerMessage(`Actual time between 2 frames: ${now - timeBeforeNewInterval};`)
+        timeBeforeNewInterval = now;
+    
+        emptyCanvas();
+    
+        updateOrientation();
+    
+        updatePosition();
+    
+        drawBlocks();
+    
+        computeRays();
+    
+        drawRays();
+    
+        drawPlayer();
+    
+        drawSprites();
+    
+        drawRaysAsWallsAndFloors();
+    
+        addDebuggerMessage(`Time to render a frame: ${Date.now() - now};`)
+        drawLegend();
+    
+    
+    }, 1000/CONFIG.FPS);
+}
 
-setInterval(() => {
-    debuggerMessages.length = 0;
-    const now = Date.now();
-    addDebuggerMessage(`Actual time between 2 frames: ${now - timeBeforeNewInterval};`)
-    timeBeforeNewInterval = now;
+(async () => {
+    await parseWallTextureConfig();
 
-    emptyCanvas();
-
-    updateOrientation();
-
-    updatePosition();
-
-    drawBlocks();
-
-    computeRays();
-
-    drawRays();
-
-    drawPlayer();
-
-    drawSprites();
-
-    drawRaysAsWallsAndFloors();
-
-    addDebuggerMessage(`Time to render a frame: ${Date.now() - now};`)
-    drawLegend();
-
-
-}, 1000/FPS);
+    start();
+})()
 
 
 

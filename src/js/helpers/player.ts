@@ -22,10 +22,10 @@ export const PLAYER_SQUARE_SIZE: Coords = {
 
 export const player: Player = {
     coords: { x: 250, y: 250 }, // player x, y coordinates
-    speed: 50, // fixed player speed potential in pixels per second( assuming no obstructions ),
+    speed: 150, // fixed player speed potential in pixels per second( assuming no obstructions ),
     orientation: {
         angle: 0, //orientation angle in radians
-        speed: 2, // the speed with which the player changes it's orientation angle( when pressing left or right )
+        speed: 4, // the speed with which the player changes it's orientation angle( when pressing left or right )
         unitVector: {
             x: 0,
             y: 1
