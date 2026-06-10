@@ -35,8 +35,8 @@ export const floorsAndCeilingsRasterizer = (ray: Ray, rayIndex: number, rayStrip
     if(verticalPixelsLeftForFloor > 0 && CONFIG.drawFloors) {
         // draw floors start
         const rayAngleUnitVector: Coords = {
-            x: Math.sin(ray.angle),
-            y: Math.cos(ray.angle)
+            x: Math.cos(ray.angle),
+            y: Math.sin(ray.angle)
         }
 
         let currentPixelStripToDrawStart: number | null  = null;

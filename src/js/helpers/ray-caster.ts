@@ -73,16 +73,16 @@ export const computeRays = () => {
 
     }
 
-    let fieldOfViewAngleStart = player.orientation.angle + CONFIG.HALF_FIELD_OF_VIEW_ANGLE; // field of view start
-    if(fieldOfViewAngleStart > Math.PI * 2) {
-        fieldOfViewAngleStart -= Math.PI * 2
+    let fieldOfViewAngleStart = player.orientation.angle - CONFIG.HALF_FIELD_OF_VIEW_ANGLE; // field of view start
+    if(fieldOfViewAngleStart < 0) {
+        fieldOfViewAngleStart += Math.PI * 2
     }
     rays[0].angle = fieldOfViewAngleStart;
     rays.forEach((ray: Ray, index) => {
         if(index > 0) {
-            ray.angle = rays[index - 1].angle - ray.previousRayAngleDelta
-            if (ray.angle < 0) {
-                ray.angle += Math.PI * 2
+            ray.angle = rays[index - 1].angle + ray.previousRayAngleDelta
+            if (ray.angle > Math.PI * 2) {
+                ray.angle -= Math.PI * 2
             }
         }
 
@@ -141,9 +141,9 @@ const castRayUntilCollision = (startingPoint: Coords, orientationAngle: number, 
 
     let isGoingAlongMainAxis: boolean;
     if(mainAxis === 'x') {
-        isGoingAlongMainAxis = orientationAngle < Math.PI;
-    } else {
         isGoingAlongMainAxis = orientationAngle > 3 * Math.PI/2 || orientationAngle < Math.PI/2;
+    } else {
+        isGoingAlongMainAxis = orientationAngle < Math.PI;
     }
 
     let mainAxisDistanceToFirstBlock
@@ -154,7 +154,7 @@ const castRayUntilCollision = (startingPoint: Coords, orientationAngle: number, 
     }
 
     const operationModifier = isGoingAlongMainAxis ? 1 : -1;
-    const crossAxisRatio = crossAxis === 'x' ? Math.tan(orientationAngle) : 1/Math.tan(orientationAngle)
+    const crossAxisRatio = crossAxis === 'x' ? 1/Math.tan(orientationAngle) : Math.tan(orientationAngle)
     const intersection = {
         [mainAxis]: startingPoint[mainAxis] + operationModifier * mainAxisDistanceToFirstBlock,
         [crossAxis]: startingPoint[crossAxis] + operationModifier * crossAxisRatio * mainAxisDistanceToFirstBlock,

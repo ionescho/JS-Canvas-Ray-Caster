@@ -1,3 +1,5 @@
+import { Coords } from "./drawer";
+
 const SPRITE_TEXTURES =[
     [
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -40,7 +42,14 @@ const SPRITE_TEXTURES =[
     ]
 ];
 
-export const SPRITES = [
+export type Sprite = {
+    pos: Coords;
+    width: number;
+    height: number;
+    texture: number[][]
+}
+
+export const SPRITES: Sprite[] = [
     {
         pos: {
             x: 320,
@@ -56,7 +65,7 @@ export const SPRITES = [
             y: 270
         },
         width: 30,
-        height: 40,
+        height: 25,
         texture: SPRITE_TEXTURES[0]
     },
     {

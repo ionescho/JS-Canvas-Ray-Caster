@@ -74,7 +74,7 @@ const wallTexturesConfig: UnparsedWallTexture[] = [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ],
     [
-        [255, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   255, 1, 255, 1, 255, 1, 255, 1, 255, 1,   255, 1, 255, 1, 255, 1, 255, 1, 255, 1],
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 255, 1, 255, 1, 255, 1, 255, 1, 255,   1, 255, 1, 255, 1, 255, 1, 255, 1, 1],
         [1, 1, 1, 1, 1, 255, 1, 1, 1, 1,   255, 1, 255, 1, 255, 1, 255, 1, 255, 1,   255, 1, 255, 1, 255, 1, 255, 1, 255, 1],
@@ -114,8 +114,8 @@ const wallTexturesConfig: UnparsedWallTexture[] = [
     ],
     {
         url: '/img/sample%20image.jpg',
-        resolutionX: 100,
-        resolutionY: 100,
+        resolutionX: 500,
+        resolutionY: 500,
         // grayscale:{
         //     depth: 1
         // }
@@ -125,9 +125,10 @@ const wallTexturesConfig: UnparsedWallTexture[] = [
         url: '/img/favicon.svg',
         resolutionX: 30,
         resolutionY: 30,
-        grayscale:{
-            depth: 8
-        }
+        // grayscale:{
+        //     depth: 8
+        // }
+        useImageBitmapStrips: true
     },
     {
         url: '/img/favicon.jpeg',

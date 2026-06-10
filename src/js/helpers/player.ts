@@ -27,8 +27,8 @@ export const player: Player = {
         angle: 0, //orientation angle in radians
         speed: 4, // the speed with which the player changes it's orientation angle( when pressing left or right )
         unitVector: {
-            x: 0,
-            y: 1
+            x: 1,
+            y: 0
         }
     },
     movement: {
