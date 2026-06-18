@@ -1,7 +1,6 @@
 import { blockDimensions, BLOCKS_ARRAY } from "./blocks";
 import { CONFIG, configObservable } from "./config";
-import { CANVAS_DIMENSIONS, Coords } from "./drawer";
-import { FIRST_PERSON_CANVAS_DIMENSIONS } from "./first-person-rasterizer-and-drawer/drawer";
+import { Coords } from "./drawer";
 import { player } from "./player";
 import { subVec, vectorMagnitude } from "./vectorOperations";
 
@@ -163,7 +162,7 @@ const castRayUntilCollision = (startingPoint: Coords, orientationAngle: number, 
 
     const deltaMainAxis = operationModifier * blockDimensions[mainAxis];
     const deltaCrossAxis = operationModifier * crossAxisRatio * blockDimensions[mainAxis];
-    while(Math.abs(intersection.x) < CANVAS_DIMENSIONS.x && Math.abs(intersection.y) < CANVAS_DIMENSIONS.y && !blockHit) {
+    while(Math.abs(intersection.x) < CONFIG.CANVAS_DIMENSIONS.x && Math.abs(intersection.y) < CONFIG.CANVAS_DIMENSIONS.y && !blockHit) {
         intersection[mainAxis] += deltaMainAxis;
         intersection[crossAxis] += deltaCrossAxis;
 

@@ -1,13 +1,9 @@
 import { blockDimensions, BLOCKS_ARRAY } from "./blocks";
+import { CONFIG } from "./config";
 import { player, PLAYER_SQUARE_SIZE } from "./player";
 import { Ray, rays } from "./ray-caster";
 import { SPRITES } from "./sprites";
-import { addVec, perpendicularVector, scalarMulVec, subVec, unitVector } from "./vectorOperations";
-
-export const CANVAS_DIMENSIONS: Coords = {
-    x: 500,
-    y: 500,
-};
+import { addVec, perpendicularVector, scalarMulVec, subVec } from "./vectorOperations";
 
 export type Coords = {
     x: number;
@@ -15,8 +11,8 @@ export type Coords = {
 };
 
 const canvas: HTMLCanvasElement = document.getElementById('rayCaster') as HTMLCanvasElement;
-canvas.setAttribute('width', `${CANVAS_DIMENSIONS.x}px`);
-canvas.setAttribute('height', `${CANVAS_DIMENSIONS.y}px`);
+canvas.setAttribute('width', `${CONFIG.CANVAS_DIMENSIONS.x}px`);
+canvas.setAttribute('height', `${CONFIG.CANVAS_DIMENSIONS.y}px`);
 const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
 export const emptyCanvas = () => ctx.reset();

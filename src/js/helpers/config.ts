@@ -1,9 +1,13 @@
-
 export const CONFIG = {
     FPS: 50,
     
     HALF_FIELD_OF_VIEW_ANGLE: Math.PI/6, // field of view is the same on horizontal and on vertical so far
     HALF_FIELD_OF_VIEW_LENGTH: Math.tan(Math.PI/6), // The length of half of the virtual screen plane that is 1 unit in front of the player
+
+    CANVAS_DIMENSIONS: {
+        x: 500,
+        y: 500,
+    },
 
     applyFishEyeCorrection: true,
     rayCastingType: 'plane',

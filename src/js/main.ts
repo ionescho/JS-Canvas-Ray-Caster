@@ -1,5 +1,4 @@
 
-import { resolvePotentialCollisions } from './helpers/collision-resolvers';
 import { addDebuggerMessage, debuggerMessages, drawLegend } from './helpers/debugger';
 import { computeRays } from './helpers/ray-caster';
 import { updateOrientation, updatePosition } from './helpers/movement';
@@ -48,29 +47,3 @@ const start = () => {
 
     start();
 })()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const bla = () =>  resolvePotentialCollisions({x:0, y:0})// daca sterg asta, crapa, wtf, probabil ceva cu ordinea importurilor, care e faza?

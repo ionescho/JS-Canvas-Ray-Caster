@@ -1,5 +1,4 @@
 import { CONFIG } from "./config";
-import { CANVAS_DIMENSIONS } from "./drawer";
 import { player } from "./player";
 
 export const IS_DEBUGGING = true;
@@ -24,7 +23,7 @@ export const drawLegend = () => {
         `Orientation: ${roundDec2(player.orientation.angle)} rad (${roundDec2(player.orientation.angle / Math.PI * 180)} deg)`,
         `FOV: (${roundDec2(CONFIG.HALF_FIELD_OF_VIEW_ANGLE * 2 / Math.PI * 180)} deg)`,
         `Player (X,Y): (${roundDec2(player.coords.x)}, ${roundDec2(player.coords.y)})`,
-        `Canvas (width,height): (${roundDec2(CANVAS_DIMENSIONS.x)}, ${roundDec2(CANVAS_DIMENSIONS.y)})`
+        `Canvas (width,height): (${roundDec2(CONFIG.CANVAS_DIMENSIONS.x)}, ${roundDec2(CONFIG.CANVAS_DIMENSIONS.y)})`
     ];
 
     [...initialDebuggerMessages, ...debuggerMessages].forEach((message, index) => {

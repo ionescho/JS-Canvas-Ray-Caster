@@ -1,8 +1,9 @@
 import { blockDimensions, BLOCKS_ARRAY } from "./blocks";
-import { CANVAS_DIMENSIONS, Coords } from "./drawer";
+import { Coords } from "./drawer";
 import { addDebuggerMessage, roundDec2 } from "./debugger";
 import { player, PLAYER_SQUARE_SIZE } from "./player";
 import { addVec, scalarMulVec, subVec } from "./vectorOperations";
+import { CONFIG } from "./config";
 
 const checkEdgeOfScreenCollisions = (potentialFuturePlayerPos: Coords): Coords => {
 
@@ -10,14 +11,14 @@ const checkEdgeOfScreenCollisions = (potentialFuturePlayerPos: Coords): Coords =
     if(potentialFuturePlayerPos.x < 0) {
         potentialFuturePlayerPos.x = 0
     }
-    if(potentialFuturePlayerPos.x > CANVAS_DIMENSIONS.x) {
-        potentialFuturePlayerPos.x = CANVAS_DIMENSIONS.x
+    if(potentialFuturePlayerPos.x > CONFIG.CANVAS_DIMENSIONS.x) {
+        potentialFuturePlayerPos.x = CONFIG.CANVAS_DIMENSIONS.x
     }
     if(potentialFuturePlayerPos.y < 0) {
         potentialFuturePlayerPos.y = 0
     }
-    if(potentialFuturePlayerPos.y > CANVAS_DIMENSIONS.y) {
-        potentialFuturePlayerPos.y = CANVAS_DIMENSIONS.y
+    if(potentialFuturePlayerPos.y > CONFIG.CANVAS_DIMENSIONS.y) {
+        potentialFuturePlayerPos.y = CONFIG.CANVAS_DIMENSIONS.y
     }
 
     return potentialFuturePlayerPos;
